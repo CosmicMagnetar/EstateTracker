@@ -87,7 +87,7 @@ export default function Dashboard() {
         <title>EstateTracker Dashboard</title>
       </Head>
 
-      <nav className={`shadow p-4 flex justify-between items-center sticky top-0 z-50 pl-7 ${darkMode ? "bg-gray-800 text-white" : "bg-white text-gray-900"}`}>
+      <nav className={`shadow-lg p-4 flex justify-between items-center sticky top-0 z-50 pl-7 ${darkMode ? "bg-gray-800 text-white" : "bg-white text-gray-900"}`}>
         <div className="text-xl font-bold">
           <Link href="/" className="hover:text-blue-400 transition-colors">EstateTracker</Link>
         </div>
@@ -116,12 +116,49 @@ export default function Dashboard() {
             setSearchTerm(e.target.value);
             setCurrentPage(1);
           }}
-          className="p-4 w-full max-w-md mx-auto rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className={`p-4 w-full max-w-md mx-auto rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+            darkMode
+              ? "bg-gray-900 text-white border-gray-700 placeholder-gray-400"
+              : "bg-white text-gray-900 border-gray-300 placeholder-gray-500"
+          }`}
         />
         <div className="mt-4 flex justify-center space-x-4 max-w-md mx-auto">
-          <button onClick={() => handleSortChange("title")} className={`px-3 py-1 rounded ${sortKey === "title" ? "bg-blue-600 text-white" : "bg-white border border-gray-300 text-gray-700 hover:bg-blue-100"}`}>Sort by Title {sortKey === "title" ? (sortOrder === "asc" ? "↑" : "↓") : ""}</button>
-          <button onClick={() => handleSortChange("city")} className={`px-3 py-1 rounded ${sortKey === "city" ? "bg-blue-600 text-white" : "bg-white border border-gray-300 text-gray-700 hover:bg-blue-100"}`}>Sort by City {sortKey === "city" ? (sortOrder === "asc" ? "↑" : "↓") : ""}</button>
-          <button onClick={() => handleSortChange("price")} className={`px-3 py-1 rounded ${sortKey === "price" ? "bg-blue-600 text-white" : "bg-white border border-gray-300 text-gray-700 hover:bg-blue-100"}`}>Sort by Price {sortKey === "price" ? (sortOrder === "asc" ? "↑" : "↓") : ""}</button>
+          <button
+            onClick={() => handleSortChange("title")}
+            className={`px-3 py-1 rounded ${
+              sortKey === "title"
+          ? "bg-blue-600 text-white"
+          : darkMode
+          ? "bg-gray-900 border border-gray-700 text-white hover:bg-gray-800"
+          : "bg-white border border-gray-300 text-gray-700 hover:bg-blue-100"
+            }`}
+          >
+            Sort by Title {sortKey === "title" ? (sortOrder === "asc" ? "↑" : "↓") : ""}
+          </button>
+          <button
+            onClick={() => handleSortChange("city")}
+            className={`px-3 py-1 rounded ${
+              sortKey === "city"
+          ? "bg-blue-600 text-white"
+          : darkMode
+          ? "bg-gray-900 border border-gray-700 text-white hover:bg-gray-800"
+          : "bg-white border border-gray-300 text-gray-700 hover:bg-blue-100"
+            }`}
+          >
+            Sort by City {sortKey === "city" ? (sortOrder === "asc" ? "↑" : "↓") : ""}
+          </button>
+          <button
+            onClick={() => handleSortChange("price")}
+            className={`px-3 py-1 rounded ${
+              sortKey === "price"
+          ? "bg-blue-600 text-white"
+          : darkMode
+          ? "bg-gray-900 border border-gray-700 text-white hover:bg-gray-800"
+          : "bg-white border border-gray-300 text-gray-700 hover:bg-blue-100"
+            }`}
+          >
+            Sort by Price {sortKey === "price" ? (sortOrder === "asc" ? "↑" : "↓") : ""}
+          </button>
         </div>
       </section>
 

@@ -69,7 +69,7 @@ export default function Home() {
         <h2 className="text-3xl font-semibold mb-8">Explore Popular Property Types</h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-5xl mx-auto">
           {[{ icon: <HomeIcon className="w-10 h-10" />, label: "Houses" }, { icon: <Building2 className="w-10 h-10" />, label: "Apartments" }, { icon: <Globe2 className="w-10 h-10" />, label: "Villas" }].map((item, index) => (
-            <div key={index} className={`p-6 rounded-xl shadow hover:shadow-lg transform hover:scale-105 transition duration-300 ${darkMode ? "bg-gray-800 text-white" : "bg-white text-gray-900"}`}>
+            <div key={index} className={`p-6 rounded-xl shadow hover:shadow-lg transform hover:scale-105 transition duration-300 ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-900"}`}>
               <div className="text-blue-600 mb-4 flex justify-center">{item.icon}</div>
               <h4 className="text-xl font-medium">{item.label}</h4>
             </div>

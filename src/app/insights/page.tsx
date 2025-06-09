@@ -25,7 +25,7 @@ export default function Insights() {
         <title>Real Estate Investment Insights</title>
       </Head>
 
-\      <nav className={`shadow p-4 flex justify-between items-center sticky top-0 z-50 pl-7 ${darkMode ? "bg-gray-800 text-white" : "bg-white text-gray-900"}`}>
+      <nav className={`shadow-lg p-4 flex justify-between items-center sticky top-0 z-50 pl-7 ${darkMode ? "bg-gray-800 text-white" : "bg-white text-gray-900"}`}>
         <div className="text-xl font-bold">
           <Link href="/" className="hover:text-blue-400 transition-colors">EstateTracker</Link>
         </div>

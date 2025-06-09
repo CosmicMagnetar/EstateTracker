@@ -25,7 +25,7 @@ export default function Settings() {
         <title>Settings - EstateTracker</title>
       </Head>
 
-      <nav className={`shadow p-4 flex justify-between items-center sticky top-0 z-50 pl-7 ${darkMode ? "bg-gray-800 text-white" : "bg-white text-gray-900"}`}>
+      <nav className={`shadow-lg p-4 flex justify-between items-center sticky top-0 z-50 pl-7 ${darkMode ? "bg-gray-800 text-white" : "bg-white text-gray-900"}`}>
         <div className="text-xl font-bold">
           <Link href="/" className="hover:text-blue-400 transition-colors">EstateTracker</Link>
         </div>
@@ -44,7 +44,7 @@ export default function Settings() {
         <h1 className="text-5xl font-extrabold mb-4">Settings</h1>
         <p className="text-lg md:text-xl mb-8">Adjust your preferences for a personalized experience.</p>
       </section>
-
+      <br/>
       <div className={`max-w-5xl mx-auto py-12 px-6 rounded-lg shadow-lg ${darkMode ? "bg-gray-700 text-white" : "bg-white text-gray-900"}`}>
         <h2 className="text-3xl font-semibold mb-6">Theme Preferences</h2>
         <div>
@@ -57,25 +57,46 @@ export default function Settings() {
           </button>
         </div>
       </div>
-
-      <div className={`max-w-5xl mx-auto py-12 px-6 rounded-lg shadow-lg ${darkMode ? "bg-gray-700 text-white" : "bg-white text-gray-900"}`}>
+      <br/>
+      <br/>
+      <div
+        className={`max-w-5xl mx-auto py-12 px-6 rounded-lg shadow-lg transition-colors duration-500 ${
+          darkMode ? "bg-gray-700 text-white" : "bg-white text-gray-900"
+        }`}
+      >
         <h2 className="text-3xl font-semibold mb-6">Account & Preferences</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div className={`p-6 rounded-lg shadow-md ${darkMode ? "bg-gray-800 text-white" : "bg-gray-100 text-gray-900"}`}>
-            <h3 className="text-xl font-bold mb-4">Notification Preferences</h3>
-            <p className="text-gray-400">Manage alerts and updates for real estate trends.</p>
+          <div
+        className={`p-6 rounded-lg shadow-md transform transition-all duration-500 hover:scale-105 hover:shadow-xl ${
+          darkMode ? "bg-gray-800 text-white" : "bg-gray-100 text-gray-900"
+        }`}
+          >
+        <h3 className="text-xl font-bold mb-4">Notification Preferences</h3>
+        <p className="text-gray-400">Manage alerts and updates for real estate trends.</p>
           </div>
-          <div className={`p-6 rounded-lg shadow-md ${darkMode ? "bg-gray-800 text-white" : "bg-gray-100 text-gray-900"}`}>
-            <h3 className="text-xl font-bold mb-4">Language Preferences</h3>
-            <p className="text-gray-400">Select your preferred language for the platform.</p>
+          <div
+        className={`p-6 rounded-lg shadow-md transform transition-all duration-500 hover:scale-105 hover:shadow-xl ${
+          darkMode ? "bg-gray-800 text-white" : "bg-gray-100 text-gray-900"
+        }`}
+          >
+        <h3 className="text-xl font-bold mb-4">Language Preferences</h3>
+        <p className="text-gray-400">Select your preferred language for the platform.</p>
           </div>
-          <div className={`p-6 rounded-lg shadow-md ${darkMode ? "bg-gray-800 text-white" : "bg-gray-100 text-gray-900"}`}>
-            <h3 className="text-xl font-bold mb-4">Currency Format</h3>
-            <p className="text-gray-400">Choose how currency values are displayed.</p>
+          <div
+        className={`p-6 rounded-lg shadow-md transform transition-all duration-500 hover:scale-105 hover:shadow-xl ${
+          darkMode ? "bg-gray-800 text-white" : "bg-gray-100 text-gray-900"
+        }`}
+          >
+        <h3 className="text-xl font-bold mb-4">Currency Format</h3>
+        <p className="text-gray-400">Choose how currency values are displayed.</p>
           </div>
-          <div className={`p-6 rounded-lg shadow-md ${darkMode ? "bg-gray-800 text-white" : "bg-gray-100 text-gray-900"}`}>
-            <h3 className="text-xl font-bold mb-4">Privacy Settings</h3>
-            <p className="text-gray-400">Control who can see your profile and activity.</p>
+          <div
+        className={`p-6 rounded-lg shadow-md transform transition-all duration-500 hover:scale-105 hover:shadow-xl ${
+          darkMode ? "bg-gray-800 text-white" : "bg-gray-100 text-gray-900"
+        }`}
+          >
+        <h3 className="text-xl font-bold mb-4">Privacy Settings</h3>
+        <p className="text-gray-400">Control who can see your profile and activity.</p>
           </div>
         </div>
       </div>
