@@ -65,6 +65,7 @@ const AuthPages = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const newErrors: ErrorFields = {};
 
   const [loginForm, setLoginForm] = useState<LoginForm>({
     email: '',
@@ -137,62 +138,64 @@ const AuthPages = () => {
   );
 
   const validateLogin = () => {
-    const newErrors = {};
+  const newErrors: ErrorFields = {};
 
-    if (!loginForm.email) {
-      newErrors.email = "Email is required";
-    } else if (!/\S+@\S+\.\S+/.test(loginForm.email)) {
-      newErrors.email = "Email is invalid";
-    }
+  if (!loginForm.email) {
+    newErrors.email = "Email is required";
+  } else if (!/\S+@\S+\.\S+/.test(loginForm.email)) {
+    newErrors.email = "Email is invalid";
+  }
 
-    if (!loginForm.password) {
-      newErrors.password = "Password is required";
-    } else if (loginForm.password.length < 6) {
-      newErrors.password = "Password must be at least 6 characters";
-    }
+  if (!loginForm.password) {
+    newErrors.password = "Password is required";
+  } else if (loginForm.password.length < 6) {
+    newErrors.password = "Password must be at least 6 characters";
+  }
 
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+  setErrors(newErrors);
+  return Object.keys(newErrors).length === 0;
+};
+
 
   const validateSignup = () => {
-    const newErrors = {};
+  const newErrors: ErrorFields = {};
 
-    if (!signupForm.fullName) {
-      newErrors.fullName = "Full name is required";
-    }
+  if (!signupForm.fullName) {
+    newErrors.fullName = "Full name is required";
+  }
 
-    if (!signupForm.email) {
-      newErrors.email = "Email is required";
-    } else if (!/\S+@\S+\.\S+/.test(signupForm.email)) {
-      newErrors.email = "Email is invalid";
-    }
+  if (!signupForm.email) {
+    newErrors.email = "Email is required";
+  } else if (!/\S+@\S+\.\S+/.test(signupForm.email)) {
+    newErrors.email = "Email is invalid";
+  }
 
-    if (!signupForm.phone) {
-      newErrors.phone = "Phone number is required";
-    }
+  if (!signupForm.phone) {
+    newErrors.phone = "Phone number is required";
+  }
 
-    if (!signupForm.password) {
-      newErrors.password = "Password is required";
-    } else if (signupForm.password.length < 8) {
-      newErrors.password = "Password must be at least 8 characters";
-    }
+  if (!signupForm.password) {
+    newErrors.password = "Password is required";
+  } else if (signupForm.password.length < 8) {
+    newErrors.password = "Password must be at least 8 characters";
+  }
 
-    if (!signupForm.confirmPassword) {
-      newErrors.confirmPassword = "Please confirm your password";
-    } else if (signupForm.password !== signupForm.confirmPassword) {
-      newErrors.confirmPassword = "Passwords do not match";
-    }
+  if (!signupForm.confirmPassword) {
+    newErrors.confirmPassword = "Please confirm your password";
+  } else if (signupForm.password !== signupForm.confirmPassword) {
+    newErrors.confirmPassword = "Passwords do not match";
+  }
 
-    if (!signupForm.agreeTerms) {
-      newErrors.agreeTerms = "You must agree to the terms and conditions";
-    }
+  if (!signupForm.agreeTerms) {
+    newErrors.agreeTerms = "You must agree to the terms and conditions";
+  }
 
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+  setErrors(newErrors);
+  return Object.keys(newErrors).length === 0;
+};
 
-  const handleLogin = async (e) => {
+
+  const handleLogin = async (e: { preventDefault: () => void; }) => {
     e.preventDefault();
     if (!validateLogin()) return;
 
@@ -218,39 +221,6 @@ const AuthPages = () => {
     }
   };
 
-  const handleSignup = async (e) => {
-    e.preventDefault();
-    if (!validateSignup()) return;
-
-    setIsLoading(true);
-    setErrors({});
-
-    try {
-      const { error } = await supabase.auth.signUp({
-        email: signupForm.email,
-        password: signupForm.password,
-        options: {
-          data: {
-            fullName: signupForm.fullName,
-            phone: signupForm.phone,
-            company: signupForm.company,
-          },
-          emailRedirectTo: `${window.location.origin}/dashboard`,
-        },
-      });
-
-      if (error) {
-        setErrors({ email: error.message });
-      } else {
-        alert("Signup successful! Please check your email.");
-        setCurrentPage("login");
-      }
-    } catch (err) {
-      setErrors({ email: "Unexpected error. Try again." });
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const handleGoogleLogin = async () => {
     setGoogleLoading(true);
@@ -274,57 +244,69 @@ const AuthPages = () => {
     }
   };
 
-  const InputField = ({
-    icon: Icon,
-    type = "text",
-    placeholder,
-    value,
-    onChange,
-    error,
-    name,
-    showPasswordToggle = false,
-    showPassword = false,
-    onTogglePassword = () => {},
-  }) => (
-    <div className="relative mb-5">
-      <div className="relative">
-        <Icon className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-        <input
-          type={
-            showPasswordToggle ? (showPassword ? "text" : "password") : type
-          }
-          placeholder={placeholder}
-          value={value}
-          onChange={onChange}
-          name={name}
-          className={`w-full pl-12 pr-12 py-4 border ${
-            error ? "border-red-500" : themeClasses.border
-          } rounded-xl ${themeClasses.inputBg} ${
-            themeClasses.text
-          } focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300 font-light`}
-        />
-        {showPasswordToggle && (
-          <button
-            type="button"
-            onClick={onTogglePassword}
-            className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-green-500 transition-colors duration-200"
-          >
-            {showPassword ? (
-              <EyeOff className="w-5 h-5" />
-            ) : (
-              <Eye className="w-5 h-5" />
-            )}
-          </button>
-        )}
-      </div>
-      {error && (
-        <div className="flex items-center space-x-2 mt-2 text-red-500">
-          <AlertCircle className="w-4 h-4" />
-          <span className="text-sm">{error}</span>
-        </div>
+  type InputFieldProps = {
+  icon: React.ElementType;
+  type?: string;
+  placeholder: string;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  error?: string;
+  name: string;
+  showPasswordToggle?: boolean;
+  showPassword?: boolean;
+  onTogglePassword?: () => void;
+};
+
+const InputField: React.FC<InputFieldProps> = ({
+  icon: Icon,
+  type = "text",
+  placeholder,
+  value,
+  onChange,
+  error,
+  name,
+  showPasswordToggle = false,
+  showPassword = false,
+  onTogglePassword = () => {},
+}) => (
+  <div className="relative mb-5">
+    <div className="relative">
+      <Icon className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+      <input
+        type={showPasswordToggle ? (showPassword ? "text" : "password") : type}
+        placeholder={placeholder}
+        value={value}
+        onChange={onChange}
+        name={name}
+        className={`w-full pl-12 pr-12 py-4 border ${
+          error ? "border-red-500" : themeClasses.border
+        } rounded-xl ${themeClasses.inputBg} ${
+          themeClasses.text
+        } focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300 font-light`}
+      />
+      {showPasswordToggle && (
+        <button
+          type="button"
+          onClick={onTogglePassword}
+          className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-green-500 transition-colors duration-200"
+        >
+          {showPassword ? (
+            <EyeOff className="w-5 h-5" />
+          ) : (
+            <Eye className="w-5 h-5" />
+          )}
+        </button>
       )}
     </div>
-  );
+    {error && (
+      <div className="flex items-center space-x-2 mt-2 text-red-500">
+        <AlertCircle className="w-4 h-4" />
+        <span className="text-sm">{error}</span>
+      </div>
+    )}
+  </div>
+);
+
 
   const LoginForm = () => (
     <form onSubmit={handleLogin} className="space-y-6">
