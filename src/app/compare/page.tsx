@@ -67,9 +67,12 @@ export default function ComparePage() {
       setMousePosition(newPosition);
       if (cursorRef.current) {
         requestAnimationFrame(() => {
-          cursorRef.current.style.transform = `translate(${newPosition.x - 8}px, ${newPosition.y - 8}px)`;
+          if (cursorRef.current) {
+            cursorRef.current.style.transform = `translate(${newPosition.x - 8}px, ${newPosition.y - 8}px)`;
+          }
         });
       }
+
     };
     window.addEventListener("scroll", handleScroll);
     window.addEventListener("mousemove", handleMouseMove);

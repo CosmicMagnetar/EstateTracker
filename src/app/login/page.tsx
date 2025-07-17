@@ -85,11 +85,14 @@ const AuthPages = () => {
    const handleMouseMove = (e) => {
   mousePositionRef.current = { x: e.clientX, y: e.clientY };
 
-  if (cursorRef.current) {
-    requestAnimationFrame(() => {
-      cursorRef.current.style.transform = `translate(${e.clientX - 8}px, ${e.clientY - 8}px)`;
-    });
-  }
+    if (cursorRef.current) {
+      requestAnimationFrame(() => {
+        if (cursorRef.current) {
+          cursorRef.current.style.transform = `translate(${newPosition.x - 8}px, ${newPosition.y - 8}px)`;
+        }
+      });
+    }
+
 };
 
 

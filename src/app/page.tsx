@@ -87,11 +87,14 @@ export default function HomePage() {
       const newPosition = { x: e.clientX, y: e.clientY };
       setMousePosition(newPosition);
       
-      if (cursorRef.current) {
-        requestAnimationFrame(() => {
+    if (cursorRef.current) {
+      requestAnimationFrame(() => {
+        if (cursorRef.current) {
           cursorRef.current.style.transform = `translate(${newPosition.x - 8}px, ${newPosition.y - 8}px)`;
-        });
-      }
+        }
+      });
+    }
+
     };
 
     window.addEventListener("scroll", handleScroll);
