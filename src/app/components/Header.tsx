@@ -11,13 +11,17 @@ import type { User as SupabaseUser } from "@supabase/supabase-js";
 export default function Header() {
   const pathname = usePathname();
   const router = useRouter();
+  type UserProfile = {
+  avatar_url?: string;
+  name?: string;
+};
 
   // ❌ Hide on login/signup pages
   const hideHeaderRoutes = ["/login", "/signup", "/profile"];
   if (hideHeaderRoutes.includes(pathname)) return null;
 
   const [user, setUser] = useState<SupabaseUser | null>(null);
-  const [profile, setProfile] = useState(null);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrollY, setScrollY] = useState(0);
   const { isDark, toggleDark } = useSettings();
