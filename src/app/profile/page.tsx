@@ -43,7 +43,6 @@ export default function ProfilePage() {
   const { isDark, toggleDark, notifications, toggleNotifications } = useSettings();
   const cursorRef = useRef(null);
 
-
   const themeClasses = {
     bg: isDark ? 'bg-gray-900' : 'bg-gray-50',
     text: isDark ? 'text-white' : 'text-gray-900',
@@ -64,11 +63,11 @@ export default function ProfilePage() {
   };
 
   useEffect(() => {
-    const handleScroll = () => {
+    function handleScroll() {
       setScrollY(window.scrollY);
-    };
+    }
 
-    const handleMouseMove = (e) => {
+    const handleMouseMove = (e: MouseEvent) => {
       const newPosition = { x: e.clientX, y: e.clientY };
       setMousePosition(newPosition);
       
@@ -79,7 +78,7 @@ export default function ProfilePage() {
           }
         });
       }
-
+    };
 
     window.addEventListener("scroll", handleScroll);
     window.addEventListener("mousemove", handleMouseMove);
@@ -179,7 +178,7 @@ export default function ProfilePage() {
     window.location.href = "/";
   };
 
-  const isActive = (href) => {
+  const isActive = (href: string) => {
     return window.location.pathname === href;
   };
 
