@@ -30,6 +30,12 @@ import Header from "../components/Header";
 import { useSettings } from "../settings-context";
 import Link from "next/link";
 
+type LoginForm = {
+  email: string;
+  password: string;
+};
+
+
 const handleGoogleAuth = async () => {
   try {
     const { error } = await supabase.auth.signInWithOAuth({
