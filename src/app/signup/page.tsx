@@ -55,7 +55,7 @@ export default function SignupPage() {
 
   useEffect(() => {
     const handleScroll = () => setScrollY(window.scrollY);
-    const handleMouseMove = (e: MouseEvent) => {
+    const handleMouseMove = (e: globalThis.MouseEvent) => {
       const newPosition = { x: e.clientX, y: e.clientY };
       setMousePosition(newPosition);
             
