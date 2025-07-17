@@ -30,50 +30,49 @@ import Header from "../components/Header";
 import { useSettings } from "../settings-context";
 import Link from "next/link";
 
+// ✅ Types
+
 type LoginForm = {
   email: string;
   password: string;
-  rememberMe: boolean; // ✅ Add this line
+  rememberMe: boolean;
 };
 
-
-
-const handleGoogleAuth = async () => {
-  try {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo: `${window.location.origin}/dashboard`,
-      },
-    });
-
-    if (error) {
-      console.error("Google Auth Error:", error.message);
-    }
-  } catch (err) {
-    console.error("Unexpected error with Google login", err);
-  }
+type SignupForm = {
+  fullName: string;
+  email: string;
+  phone: string;
+  company: string;
+  password: string;
+  confirmPassword: string;
+  agreeTerms: boolean;
 };
 
+type ErrorFields = Partial<
+  Record<
+    keyof LoginForm | keyof SignupForm | "submit",
+    string
+  >
+>;
+
+// ✅ Component Start
 const AuthPages = () => {
-  const [currentPage, setCurrentPage] = useState("login"); // 'login' or 'signup'
+  const [currentPage, setCurrentPage] = useState("login");
   const [scrollY, setScrollY] = useState(0);
   const mousePositionRef = useRef({ x: 0, y: 0 });
+  const cursorRef = useRef<HTMLDivElement>(null);
   const { isDark, toggleDark } = useSettings();
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
-  const cursorRef = useRef<HTMLDivElement>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Form states
   const [loginForm, setLoginForm] = useState<LoginForm>({
-  email: '',
-  password: '',
-  rememberMe: false
-});
+    email: '',
+    password: '',
+    rememberMe: false,
+  });
 
-
-  const [signupForm, setSignupForm] = useState({
+  const [signupForm, setSignupForm] = useState<SignupForm>({
     fullName: "",
     email: "",
     phone: "",
@@ -83,40 +82,23 @@ const AuthPages = () => {
     agreeTerms: false,
   });
 
-  type ErrorFields = {
-  email?: string;
-  password?: string;
-  confirmPassword?: string;
-  fullName?: string;
-  phone?: string;
-  agreeTerms?: string;
-  submit?: string;
-};
-const [errors, setErrors] = useState<ErrorFields>({});
-  const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState<ErrorFields>({});
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrollY(window.scrollY);
-    };
-
+    const handleScroll = () => setScrollY(window.scrollY);
     const handleMouseMove = (e: MouseEvent) => {
       mousePositionRef.current = { x: e.clientX, y: e.clientY };
-
       if (cursorRef.current) {
         requestAnimationFrame(() => {
-  if (cursorRef.current) {
-    const newPosition = { x: e.clientX, y: e.clientY };
-    cursorRef.current.style.transform = `translate(${newPosition.x - 8}px, ${newPosition.y - 8}px)`;
-  }
-});
-
+          if (cursorRef.current) {
+            const { x, y } = mousePositionRef.current;
+            cursorRef.current.style.transform = `translate(${x - 8}px, ${y - 8}px)`;
+          }
+        });
       }
     };
-
     window.addEventListener("scroll", handleScroll);
     window.addEventListener("mousemove", handleMouseMove);
-
     return () => {
       window.removeEventListener("scroll", handleScroll);
       window.removeEventListener("mousemove", handleMouseMove);
