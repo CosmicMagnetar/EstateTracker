@@ -6,6 +6,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { supabase } from "../../../supabaseClient";
 import { useSettings } from "../settings-context";
 import { Sun, Moon, User, LogOut, Menu, X } from "lucide-react";
+import type { User as SupabaseUser } from "@supabase/supabase-js";
 
 export default function Header() {
   const pathname = usePathname();
@@ -15,7 +16,7 @@ export default function Header() {
   const hideHeaderRoutes = ["/login", "/signup", "/profile"];
   if (hideHeaderRoutes.includes(pathname)) return null;
 
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<SupabaseUser | null>(null);
   const [profile, setProfile] = useState(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrollY, setScrollY] = useState(0);
