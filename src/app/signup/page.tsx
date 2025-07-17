@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, ChangeEvent, FormEvent, MouseEvent } from "react";
 import {
   Mail,
   Eye,
@@ -11,31 +11,44 @@ import {
   Shield,
   Zap,
   ChevronLeft,
-  Home,
   Twitter,
   Linkedin,
   Github,
   Instagram,
   Chrome,
 } from "lucide-react";
-
-// You'll need to import your Supabase client
 import { supabase } from '../../../supabaseClient';
 import { useSettings } from "../settings-context";
 import Link from "next/link";
+import Image from "next/image";
+
+interface FormData {
+  email: string;
+  password: string;
+  acceptTerms: boolean;
+  newsletter: boolean;
+}
+
+interface Errors {
+  email?: string;
+  password?: string;
+  acceptTerms?: string;
+  submit?: string;
+  [key: string]: string | undefined;
+}
 
 export default function SignupPage() {
-  const { isDark, toggleDark, notifications, toggleNotifications } = useSettings();
+  const { isDark, toggleDark } = useSettings();
   const [showPassword, setShowPassword] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [scrollY, setScrollY] = useState(0);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     email: '',
     password: '',
     acceptTerms: false,
     newsletter: true
   });
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState<Errors>({});
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const cursorRef = useRef<HTMLDivElement>(null);
@@ -53,7 +66,6 @@ export default function SignupPage() {
           }
         });
       }
-
     };
 
     window.addEventListener("scroll", handleScroll);
@@ -85,21 +97,20 @@ export default function SignupPage() {
     inputText: isDark ? 'text-white placeholder-gray-400' : 'text-gray-900 placeholder-gray-500'
   };
 
-  const handleInputChange = (e) => {
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
     setFormData(prev => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : value
     }));
     
-    // Clear error when user starts typing
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }
   };
 
   const validateForm = () => {
-    const newErrors = {};
+    const newErrors: Errors = {};
     
     if (!formData.email.trim()) newErrors.email = 'Email is required';
     else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = 'Email is invalid';
@@ -113,7 +124,7 @@ export default function SignupPage() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleEmailSignup = async (e) => {
+  const handleEmailSignup = async (e: FormEvent) => {
     e.preventDefault();
     if (!validateForm()) return;
     
@@ -121,7 +132,7 @@ export default function SignupPage() {
     setErrors({});
     
     try {
-      const { data, error } = await supabase.auth.signUp({
+      const { error } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
         options: {
@@ -134,9 +145,7 @@ export default function SignupPage() {
       if (error) {
         setErrors({ submit: error.message });
       } else {
-        // Success - you might want to redirect or show a success message
         alert('Account created successfully! Please check your email for verification.');
-        // You can redirect here: window.location.href = '/dashboard';
       }
     } catch (error) {
       setErrors({ submit: 'An unexpected error occurred. Please try again.' });
@@ -150,7 +159,7 @@ export default function SignupPage() {
     setErrors({});
     
     try {
-      const { data, error } = await supabase.auth.signInWithOAuth({
+      const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
           redirectTo: `${window.location.origin}/dashboard`
@@ -160,7 +169,6 @@ export default function SignupPage() {
       if (error) {
         setErrors({ submit: error.message });
       }
-      // Note: For OAuth, the user will be redirected to Google, so we don't handle success here
     } catch (error) {
       setErrors({ submit: 'An unexpected error occurred. Please try again.' });
     } finally {
@@ -168,11 +176,11 @@ export default function SignupPage() {
     }
   };
 
-const Logo = () => (
+  const Logo = () => (
     <Link href="/" className="flex items-center space-x-3">
       <div className="relative">
         <div className="w-10 h-10 rounded-full flex items-center justify-center">
-          <img src="/logo.png" />
+          <Image src="/logo.png" alt="ZonePulse Logo" width={40} height={40} />
         </div>
       </div>
       <span className="text-2xl font-light tracking-wider">ZonePulse</span>
@@ -198,11 +206,11 @@ const Logo = () => (
           
           <div className="flex items-center space-x-4">
             <button
-            onClick={toggleDark}
-            className={`p-2 rounded-full ${themeClasses.border} ${themeClasses.bgHover}`}
-          >
-            {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-          </button>
+              onClick={toggleDark}
+              className={`p-2 rounded-full ${themeClasses.border} ${themeClasses.bgHover}`}
+            >
+              {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+            </button>
             
             <Link href="/" className={`flex items-center space-x-2 px-4 py-2 rounded-full ${themeClasses.border} ${themeClasses.bgHover} transition-all duration-300`}>
               <ChevronLeft className="w-4 h-4" />
@@ -326,14 +334,15 @@ const Logo = () => (
                 </div>
 
                 {/* Email Signup Form */}
-                <div className="space-y-6">
+                <form onSubmit={handleEmailSignup} className="space-y-6">
                   {/* Email */}
                   <div>
-                    <label className={`block text-sm font-light mb-2 ${themeClasses.textSecondary}`}>Email Address</label>
+                    <label htmlFor="email" className={`block text-sm font-light mb-2 ${themeClasses.textSecondary}`}>Email Address</label>
                     <div className="relative">
                       <Mail className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 ${themeClasses.textMuted}`} />
                       <input
                         type="email"
+                        id="email"
                         name="email"
                         value={formData.email}
                         onChange={handleInputChange}
@@ -346,10 +355,11 @@ const Logo = () => (
 
                   {/* Password */}
                   <div>
-                    <label className={`block text-sm font-light mb-2 ${themeClasses.textSecondary}`}>Password</label>
+                    <label htmlFor="password" className={`block text-sm font-light mb-2 ${themeClasses.textSecondary}`}>Password</label>
                     <div className="relative">
                       <input
                         type={showPassword ? "text" : "password"}
+                        id="password"
                         name="password"
                         value={formData.password}
                         onChange={handleInputChange}
@@ -372,12 +382,13 @@ const Logo = () => (
                     <div className="flex items-start space-x-3">
                       <input
                         type="checkbox"
+                        id="acceptTerms"
                         name="acceptTerms"
                         checked={formData.acceptTerms}
                         onChange={handleInputChange}
                         className="mt-1 w-4 h-4 text-green-600 rounded border-gray-300 focus:ring-green-500"
                       />
-                      <label className={`text-sm font-light ${themeClasses.textSecondary}`}>
+                      <label htmlFor="acceptTerms" className={`text-sm font-light ${themeClasses.textSecondary}`}>
                         I accept the <a href="/terms" className={`${themeClasses.accent} hover:underline`}>Terms and Conditions</a> and <a href="/privacy" className={`${themeClasses.accent} hover:underline`}>Privacy Policy</a>
                       </label>
                     </div>
@@ -386,12 +397,13 @@ const Logo = () => (
                     <div className="flex items-start space-x-3">
                       <input
                         type="checkbox"
+                        id="newsletter"
                         name="newsletter"
                         checked={formData.newsletter}
                         onChange={handleInputChange}
                         className="mt-1 w-4 h-4 text-green-600 rounded border-gray-300 focus:ring-green-500"
                       />
-                      <label className={`text-sm font-light ${themeClasses.textSecondary}`}>
+                      <label htmlFor="newsletter" className={`text-sm font-light ${themeClasses.textSecondary}`}>
                         I want to receive updates about new features and market insights
                       </label>
                     </div>
@@ -399,8 +411,7 @@ const Logo = () => (
 
                   {/* Submit Button */}
                   <button
-                    type="button"
-                    onClick={handleEmailSignup}
+                    type="submit"
                     disabled={loading}
                     className={`group relative w-full overflow-hidden bg-green-500 text-white hover:bg-green-600 py-4 rounded-xl font-light text-lg transition-all duration-500 tracking-wide shadow-lg hover:shadow-xl ${themeClasses.accentGlow} disabled:opacity-50 disabled:cursor-not-allowed`}
                   >
@@ -418,7 +429,7 @@ const Logo = () => (
                       )}
                     </span>
                   </button>
-                </div>
+                </form>
               </div>
             </div>
           </div>
@@ -430,16 +441,16 @@ const Logo = () => (
         <div className={`max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0 text-sm font-light ${themeClasses.textSecondary}`}>
           <p>© {new Date().getFullYear()} ZonePulse. All rights reserved.</p>
           <div className="flex space-x-4">
-            <a href="https://twitter.com" target="_blank" className="hover:text-green-500 transition-colors">
+            <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="hover:text-green-500 transition-colors">
               <Twitter size={18} />
             </a>
-            <a href="https://linkedin.com" target="_blank" className="hover:text-green-500 transition-colors">
+            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="hover:text-green-500 transition-colors">
               <Linkedin size={18} />
             </a>
-            <a href="https://github.com" target="_blank" className="hover:text-green-500 transition-colors">
+            <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="hover:text-green-500 transition-colors">
               <Github size={18} />
             </a>
-            <a href="https://instagram.com" target="_blank" className="hover:text-green-500 transition-colors">
+            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="hover:text-green-500 transition-colors">
               <Instagram size={18} />
             </a>
           </div>
