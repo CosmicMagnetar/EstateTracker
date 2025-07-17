@@ -31,16 +31,17 @@ import {
 } from "lucide-react";
 import { supabase } from "../../../supabaseClient";
 import { useSettings } from "../settings-context";
+import type { User as SupabaseUser } from "@supabase/supabase-js";
 
 export default function ProfilePage() {
   const [userData, setUserData] = useState(null);
-  const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrollY, setScrollY] = useState(0);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const { isDark, toggleDark } = useSettings();
   const cursorRef = useRef<HTMLDivElement | null>(null);
+  const [user, setUser] = useState<SupabaseUser | null>(null);
 
   const themeClasses = {
     bg: isDark ? "bg-gray-900" : "bg-gray-50",
