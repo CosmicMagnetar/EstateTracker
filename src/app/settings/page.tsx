@@ -11,16 +11,42 @@ import {
   Settings
 } from "lucide-react";
 import { useSettings } from "../settings-context";
-import ToggleSwitch from "../components/ToggleSwitch";
+
+interface ThemeClasses {
+  bg: string;
+  text: string;
+  textSecondary: string;
+  textMuted: string;
+  border: string;
+  borderHover: string;
+  bgHover: string;
+  navBg: string;
+  gradient: string;
+  cardBg: string;
+  cursor: string;
+  accent: string;
+  accentBg: string;
+  accentHover: string;
+  accentBorder: string;
+  accentGlow: string;
+  tileBg?: string;
+  tileHover?: string;
+}
+
+interface SettingTileProps {
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+  theme: ThemeClasses;
+}
 
 export default function SettingsPage() {
   const [scrollY, setScrollY] = useState(0);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const { isDark, toggleDark, notifications, toggleNotifications } = useSettings();
+  const { isDark, toggleDark } = useSettings();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
-  const [activeTab, setActiveTab] = useState('growth');
-  const heroRef = useRef(null);
+  const heroRef = useRef<HTMLDivElement>(null);
   const cursorRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -29,19 +55,17 @@ export default function SettingsPage() {
       setShowScrollTop(window.scrollY > 500);
     };
 
-    const handleMouseMove = (e: { clientX: any; clientY: any; }) => {
+    const handleMouseMove = (e: MouseEvent) => {
       const newPosition = { x: e.clientX, y: e.clientY };
       setMousePosition(newPosition);
       
-    if (cursorRef.current) {
-      requestAnimationFrame(() => {
-        if (cursorRef.current) {
-          cursorRef.current.style.transform = `translate(${newPosition.x - 8}px, ${newPosition.y - 8}px)`;
-        }
-      });
-    }
-
-
+      if (cursorRef.current) {
+        requestAnimationFrame(() => {
+          if (cursorRef.current) {
+            cursorRef.current.style.transform = `translate(${newPosition.x - 8}px, ${newPosition.y - 8}px)`;
+          }
+        });
+      }
     };
 
     window.addEventListener("scroll", handleScroll);
@@ -53,12 +77,11 @@ export default function SettingsPage() {
     };
   }, []);
 
-
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const themeClasses = {
+  const themeClasses: ThemeClasses = {
     bg: isDark ? 'bg-gray-900' : 'bg-gray-50',
     text: isDark ? 'text-white' : 'text-gray-900',
     textSecondary: isDark ? 'text-gray-300' : 'text-gray-600',
@@ -74,13 +97,16 @@ export default function SettingsPage() {
     accentBg: isDark ? 'bg-green-500' : 'bg-green-500',
     accentHover: isDark ? 'hover:bg-green-600' : 'hover:bg-green-600',
     accentBorder: 'border-green-500',
-    accentGlow: isDark ? 'shadow-green-500/20' : 'shadow-green-500/10'
+    accentGlow: isDark ? 'shadow-green-500/20' : 'shadow-green-500/10',
+    tileBg: isDark ? 'bg-gray-800' : 'bg-white',
+    tileHover: isDark ? 'hover:bg-gray-700' : 'hover:bg-gray-50'
   };
+
   const Logo = () => (
     <Link href="/" className="flex items-center space-x-3">
       <div className="relative">
         <div className="w-10 h-10 rounded-full flex items-center justify-center">
-          <img src="/logo.png" />
+          <img src="/logo.png" alt="ZonePulse Logo" />
         </div>
       </div>
       <span className="text-2xl font-light tracking-wider">ZonePulse</span>
@@ -97,86 +123,85 @@ export default function SettingsPage() {
           willChange: 'transform'
         }}
       />
-      {/* Navigation */}
 
       {/* Header */}
-     <section id="settings" ref={heroRef} className="relative min-h-screen flex items-center justify-center overflow-hidden">
-  {/* Animated Background Elements */}
-  <div className="absolute inset-0 overflow-hidden">
-    <div
-      className={`absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-br from-green-500/20 to-emerald-500/20 rounded-full blur-3xl`}
-      style={{
-        transform: `translate(${mousePosition.x * 0.02}px, ${mousePosition.y * 0.02}px) translateY(${scrollY * 0.5}px)`,
-        opacity: Math.max(0, 1 - scrollY * 0.002),
-      }}
-    />
-    <div
-      className={`absolute bottom-1/4 right-1/4 w-80 h-80 bg-gradient-to-br from-emerald-500/20 to-green-400/20 rounded-full blur-3xl`}
-      style={{
-        transform: `translate(${mousePosition.x * -0.02}px, ${mousePosition.y * -0.02}px) translateY(${scrollY * -0.3}px)`,
-        opacity: Math.max(0, 1 - scrollY * 0.002),
-      }}
-    />
-  </div>
+      <section id="settings" ref={heroRef} className="relative min-h-screen flex items-center justify-center overflow-hidden">
+        {/* Animated Background Elements */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div
+            className={`absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-br from-green-500/20 to-emerald-500/20 rounded-full blur-3xl`}
+            style={{
+              transform: `translate(${mousePosition.x * 0.02}px, ${mousePosition.y * 0.02}px) translateY(${scrollY * 0.5}px)`,
+              opacity: Math.max(0, 1 - scrollY * 0.002),
+            }}
+          />
+          <div
+            className={`absolute bottom-1/4 right-1/4 w-80 h-80 bg-gradient-to-br from-emerald-500/20 to-green-400/20 rounded-full blur-3xl`}
+            style={{
+              transform: `translate(${mousePosition.x * -0.02}px, ${mousePosition.y * -0.02}px) translateY(${scrollY * -0.3}px)`,
+              opacity: Math.max(0, 1 - scrollY * 0.002),
+            }}
+          />
+        </div>
 
-  <div className="relative z-10 text-center px-8 max-w-6xl mx-auto">
-    {/* Badge */}
-    <div
-      className={`inline-flex items-center space-x-2 border ${themeClasses.accentBorder} rounded-full px-6 py-3 mb-12 backdrop-blur-sm bg-green-500/10 shadow-lg ${themeClasses.accentGlow}`}
-      style={{
-        transform: `translateY(${scrollY * 0.3}px)`,
-        opacity: Math.max(0, 1 - scrollY * 0.003),
-      }}
-    >
-      <Settings className="w-4 h-4 text-green-500" />
-      <span className={`text-sm font-light tracking-wide ${themeClasses.accent}`}>
-        Customize your preferences
-      </span>
-    </div>
+        <div className="relative z-10 text-center px-8 max-w-6xl mx-auto">
+          {/* Badge */}
+          <div
+            className={`inline-flex items-center space-x-2 border ${themeClasses.accentBorder} rounded-full px-6 py-3 mb-12 backdrop-blur-sm bg-green-500/10 shadow-lg ${themeClasses.accentGlow}`}
+            style={{
+              transform: `translateY(${scrollY * 0.3}px)`,
+              opacity: Math.max(0, 1 - scrollY * 0.003),
+            }}
+          >
+            <Settings className="w-4 h-4 text-green-500" />
+            <span className={`text-sm font-light tracking-wide ${themeClasses.accent}`}>
+              Customize your preferences
+            </span>
+          </div>
 
-    {/* Main Headline */}
-    <h1
-      className="text-6xl md:text-8xl lg:text-9xl font-light mb-8 leading-none tracking-tight"
-      style={{
-        transform: `translateY(${scrollY * 0.2}px)`,
-        opacity: Math.max(0, 1 - scrollY * 0.002),
-      }}
-    >
-      <span className="block">User</span>
-      <span className="block bg-gradient-to-r from-green-500 to-emerald-500 bg-clip-text text-transparent">
-        Settings
-      </span>
-    </h1>
+          {/* Main Headline */}
+          <h1
+            className="text-6xl md:text-8xl lg:text-9xl font-light mb-8 leading-none tracking-tight"
+            style={{
+              transform: `translateY(${scrollY * 0.2}px)`,
+              opacity: Math.max(0, 1 - scrollY * 0.002),
+            }}
+          >
+            <span className="block">User</span>
+            <span className="block bg-gradient-to-r from-green-500 to-emerald-500 bg-clip-text text-transparent">
+              Settings
+            </span>
+          </h1>
 
-    {/* Subtitle */}
-    <p
-      className={`text-xl md:text-2xl font-light mb-16 max-w-3xl mx-auto ${themeClasses.textSecondary} leading-relaxed`}
-      style={{
-        transform: `translateY(${scrollY * 0.4}px)`,
-        opacity: Math.max(0, 1 - scrollY * 0.004),
-      }}
-    >
-      Manage your display preferences, privacy controls, and platform behavior from one unified dashboard.
-    </p>
+          {/* Subtitle */}
+          <p
+            className={`text-xl md:text-2xl font-light mb-16 max-w-3xl mx-auto ${themeClasses.textSecondary} leading-relaxed`}
+            style={{
+              transform: `translateY(${scrollY * 0.4}px)`,
+              opacity: Math.max(0, 1 - scrollY * 0.004),
+            }}
+          >
+            Manage your display preferences, privacy controls, and platform behavior from one unified dashboard.
+          </p>
 
-    {/* Scroll Indicator */}
-    <div
-      className="animate-bounce"
-      style={{
-        opacity: Math.max(0, 1 - scrollY * 0.01),
-      }}
-    >
-      <ChevronDown className="w-6 h-6 mx-auto text-green-500" />
-    </div>
-  </div>
-</section>
+          {/* Scroll Indicator */}
+          <div
+            className="animate-bounce"
+            style={{
+              opacity: Math.max(0, 1 - scrollY * 0.01),
+            }}
+          >
+            <ChevronDown className="w-6 h-6 mx-auto text-green-500" />
+          </div>
+        </div>
+      </section>
 
       {/* Theme Toggle */}
       <section className="max-w-5xl mx-auto py-16 px-6">
         <div className={`rounded-xl shadow-lg p-8 ${themeClasses.cardBg}`}>
           <h2 className="text-3xl font-light mb-6">Theme Preferences</h2>
           <button
-            onClick={() => toggleDark(!isDark)}
+            onClick={toggleDark}
             className="px-6 py-3 rounded-lg bg-green-500 text-white hover:bg-green-600 transition-all"
           >
             {isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
@@ -228,7 +253,7 @@ export default function SettingsPage() {
   );
 }
 
-function SettingTile({ icon, title, description, theme }) {
+function SettingTile({ icon, title, description, theme }: SettingTileProps) {
   return (
     <div
       className={`p-6 rounded-xl border ${theme.border} ${theme.tileBg} transition-all duration-300 transform hover:scale-105 ${theme.tileHover} shadow-md`}
