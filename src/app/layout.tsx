@@ -23,7 +23,11 @@ export const metadata: Metadata = {
     "ZonePulse helps you track property price changes, compare zones, and get real-time real estate market insights across India.",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="en" className="scroll-smooth">
       <head>
