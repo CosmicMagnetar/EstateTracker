@@ -204,7 +204,7 @@ useEffect(() => {
       style: 'currency',
       currency: 'INR',
       maximumFractionDigits: 0
-    }).format(price);
+    }).format(Number(price));
   };
 
   const themeClasses = {
