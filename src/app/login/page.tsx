@@ -33,7 +33,9 @@ import Link from "next/link";
 type LoginForm = {
   email: string;
   password: string;
+  rememberMe: boolean; // ✅ Add this line
 };
+
 
 
 const handleGoogleAuth = async () => {
@@ -66,7 +68,8 @@ const AuthPages = () => {
   // Form states
   const [loginForm, setLoginForm] = useState<LoginForm>({
   email: '',
-  password: ''
+  password: '',
+  rememberMe: false
 });
 
 
@@ -80,7 +83,16 @@ const AuthPages = () => {
     agreeTerms: false,
   });
 
-  const [errors, setErrors] = useState({});
+  type ErrorFields = {
+  email?: string;
+  password?: string;
+  confirmPassword?: string;
+  fullName?: string;
+  phone?: string;
+  agreeTerms?: string;
+  submit?: string;
+};
+const [errors, setErrors] = useState<ErrorFields>({});
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
