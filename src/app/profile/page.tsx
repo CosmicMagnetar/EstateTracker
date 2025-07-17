@@ -32,10 +32,20 @@ import {
 import { supabase } from "../../../supabaseClient";
 import { useSettings } from "../settings-context";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
+import Link from "next/link";
+
+type UserData = {
+  fullName: string;
+  email: string;
+  avatar: string | null;
+  provider: string;
+  joined: string;
+  lastSignIn: string;
+};
 
 export default function ProfilePage() {
-  const [userData, setUserData] = useState(null);
-  const [profile, setProfile] = useState(null);
+  const [userData, setUserData] = useState<UserData | null>(null);
+  const [profile, setProfile] = useState<any>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrollY, setScrollY] = useState(0);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -107,19 +117,18 @@ export default function ProfilePage() {
 
       setUser(user);
 
-      // Use the same approach as in Header component
       const { data: profileData, error: profileError } = await supabase
         .from("profiles")
         .select("*")
-        .eq("id", user.id) // Use user.id directly, not the cleaned version
+        .eq("id", user.id)
         .single();
 
       if (profileData) {
         setProfile(profileData);
         setUserData({
-          fullName: profileData.name || user.email,
-          email: user.email,
-          avatar: profileData.avatar_url,
+          fullName: profileData.name || user.email || "",
+          email: user.email || "",
+          avatar: profileData.avatar_url || null,
           provider: user.app_metadata?.provider || "email",
           joined: new Date(user.created_at).toLocaleDateString("en-US", {
             year: "numeric",
@@ -138,10 +147,9 @@ export default function ProfilePage() {
         console.error("❌ Profile fetch error:", profileError);
         console.warn("🧪 user.id is:", user.id);
 
-        // If profile doesn't exist, create basic userData from user info
         setUserData({
-          fullName: user.email,
-          email: user.email,
+          fullName: user.email || "",
+          email: user.email || "",
           avatar: null,
           provider: user.app_metadata?.provider || "email",
           joined: new Date(user.created_at).toLocaleDateString("en-US", {
@@ -162,12 +170,10 @@ export default function ProfilePage() {
 
     fetchUserAndProfile();
 
-    // Listen for auth state changes
     const { data: listener } = supabase.auth.onAuthStateChange(
       (_event, session) => {
         if (session?.user) {
           setUser(session.user);
-          // Refetch profile when auth state changes
           fetchUserAndProfile();
         } else {
           setUser(null);
@@ -179,7 +185,7 @@ export default function ProfilePage() {
     );
 
     return () => {
-      listener.subscription.unsubscribe();
+      listener?.subscription.unsubscribe();
     };
   }, []);
 
@@ -253,7 +259,6 @@ export default function ProfilePage() {
     },
   ];
 
-  // Show loading state while userData is being fetched
   if (!userData) {
     return (
       <div
@@ -292,14 +297,10 @@ export default function ProfilePage() {
         } border-b ${themeClasses.border}`}
       >
         <div className="max-w-7xl mx-auto px-8 flex items-center justify-between">
-          <a href="/" className="flex items-center space-x-3">
-            <div className="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center">
-              <span className="text-white font-bold text-sm">Z</span>
-            </div>
-            <span className="text-2xl font-light tracking-wider">
-              ZonePulse
-            </span>
-          </a>
+          <Link href="/" className="flex items-center space-x-3">
+          <img src="/logo.png" className="w-8 h-8 rounded-full" alt="Logo" />
+          <span className="text-2xl font-light tracking-wider">ZonePulse</span>
+        </Link>
 
           <div className="hidden md:flex items-center space-x-8">
             {navLinks.map((link) => (
