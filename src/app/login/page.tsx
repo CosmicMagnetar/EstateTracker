@@ -87,12 +87,12 @@ const AuthPages = () => {
 
       if (cursorRef.current) {
         requestAnimationFrame(() => {
-          if (cursorRef.current) {
-            cursorRef.current.style.transform = `translate(${
-              newPosition.x - 8
-            }px, ${newPosition.y - 8}px)`;
-          }
-        });
+  if (cursorRef.current) {
+    const newPosition = { x: e.clientX, y: e.clientY };
+    cursorRef.current.style.transform = `translate(${newPosition.x - 8}px, ${newPosition.y - 8}px)`;
+  }
+});
+
       }
     };
 
