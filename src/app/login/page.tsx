@@ -82,7 +82,7 @@ const AuthPages = () => {
       setScrollY(window.scrollY);
     };
 
-    const handleMouseMove = (e) => {
+    const handleMouseMove = (e: MouseEvent) => {
       mousePositionRef.current = { x: e.clientX, y: e.clientY };
 
       if (cursorRef.current) {
