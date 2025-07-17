@@ -36,11 +36,10 @@ export default function ProfilePage() {
   const [userData, setUserData] = useState(null);
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
-  const [isEditing, setIsEditing] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrollY, setScrollY] = useState(0);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const { isDark, toggleDark, notifications, toggleNotifications } = useSettings();
+  const { isDark, toggleDark} = useSettings();
   const cursorRef = useRef(null);
 
   const themeClasses = {

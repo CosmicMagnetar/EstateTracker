@@ -1,8 +1,9 @@
+// ✅ src/app/layout.tsx
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { SettingsProvider } from "./settings-context";
-import Header from "./components/Header"; // ✅ import your Header
+import Header from "./components/Header"; // adjust path as needed
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -22,11 +23,7 @@ export const metadata: Metadata = {
     "ZonePulse helps you track property price changes, compare zones, and get real-time real estate market insights across India.",
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className="scroll-smooth">
       <head>
@@ -37,8 +34,8 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased transition-colors duration-300`}
       >
         <SettingsProvider>
-          <Header /> {/* ✅ Always rendered, no remount */}
-          <main>{children}</main> {/* adjust spacing below Header */}
+          <Header />
+          {children}
         </SettingsProvider>
       </body>
     </html>
