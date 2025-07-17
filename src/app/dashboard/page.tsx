@@ -288,17 +288,10 @@ export default function Dashboard() {
 
   useEffect(() => {
   const handleMouseMove = (e: MouseEvent) => {
-    const newPosition = { x: e.clientX, y: e.clientY };
-    setMousePosition(newPosition);
+  const newPosition = { x: e.clientX, y: e.clientY };
+  setMousePosition(newPosition);
+};
 
-    if (cursorRef.current) {
-      requestAnimationFrame(() => {
-        if (cursorRef.current) {
-          cursorRef.current.style.transform = `translate(${newPosition.x - 8}px, ${newPosition.y - 8}px)`;
-        }
-      });
-    }
-  };
 
   window.addEventListener("mousemove", handleMouseMove);
   return () => window.removeEventListener("mousemove", handleMouseMove);
