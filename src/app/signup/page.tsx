@@ -78,21 +78,33 @@ export default function SignupPage() {
   }, []);
 
   const themeClasses = {
-    bg: isDark ? 'bg-gray-900' : 'bg-gray-50',
-    text: isDark ? 'text-white' : 'text-gray-900',
-    textSecondary: isDark ? 'text-gray-300' : 'text-gray-600',
-    textMuted: isDark ? 'text-gray-500' : 'text-gray-400',
-    border: isDark ? 'border-gray-700' : 'border-gray-200',
-    borderHover: isDark ? 'hover:border-gray-600' : 'hover:border-gray-300',
-    bgHover: isDark ? 'hover:bg-gray-800' : 'hover:bg-white',
-    navBg: isDark ? 'bg-gray-900/90' : 'bg-white/90',
-    cardBg: isDark ? 'bg-gray-800' : 'bg-white',
-    cursor: isDark ? 'bg-green-400' : 'bg-green-500',
-    accent: 'text-green-500',
-    accentBg: 'bg-green-500',
-    accentHover: 'hover:bg-green-600',
-    accentBorder: 'border-green-500',
-    accentGlow: isDark ? 'shadow-green-500/20' : 'shadow-green-500/10',
+    text: isDark ? "text-white" : "text-gray-900",
+    textSecondary: isDark ? "text-gray-300" : "text-gray-600",
+    bgHover: isDark ? "hover:bg-gray-800" : "hover:bg-gray-100",
+    border: isDark ? "border-gray-700" : "border-gray-200",
+    navBg: isDark ? "bg-gray-900/90" : "bg-white/90",
+    accent: "text-green-500",
+    // ✅ Added dropdown-specific theme classes
+    dropdownBg: isDark ? "bg-gray-800" : "bg-white",
+    dropdownHover: isDark ? "hover:bg-gray-700" : "hover:bg-gray-50",
+    dropdownText: isDark ? "text-gray-300" : "text-gray-700",
+    dropdownTextHover: isDark ? "hover:text-white" : "hover:text-gray-900",
+    // ✅ Added danger/logout colors that work with both themes
+    dangerText: isDark ? "text-red-400" : "text-red-600",
+    dangerTextHover: isDark ? "hover:text-red-300" : "hover:text-red-500",
+    dangerBgHover: isDark ? "hover:bg-red-900/20" : "hover:bg-red-50",
+    bg: isDark ? "bg-gray-900" : "bg-gray-50",
+    textMuted: isDark ? "text-gray-500" : "text-gray-400",
+    borderHover: isDark ? "hover:border-gray-600" : "hover:border-gray-300",
+    cardBg: isDark ? "bg-gray-800" : "bg-white",
+    cursor: isDark ? "bg-green-400" : "bg-green-500",
+    accentBg: isDark ? "bg-green-500" : "bg-green-500",
+    accentHover: isDark ? "hover:bg-green-600" : "hover:bg-green-600",
+    accentBorder: "border-green-500",
+    accentGlow: isDark ? "shadow-green-500/20" : "shadow-green-500/10",
+    gradient: isDark
+      ? "from-gray-900 via-gray-800 to-gray-900"
+      : "from-white via-gray-50 to-white",
     input: isDark ? 'bg-gray-700 border-gray-600 focus:border-green-500' : 'bg-white border-gray-300 focus:border-green-500',
     inputText: isDark ? 'text-white placeholder-gray-400' : 'text-gray-900 placeholder-gray-500'
   };
@@ -207,9 +219,14 @@ export default function SignupPage() {
           <div className="flex items-center space-x-4">
             <button
               onClick={toggleDark}
-              className={`p-2 rounded-full ${themeClasses.border} ${themeClasses.bgHover}`}
+              className={`p-2 rounded-full border transition-colors duration-200 ${themeClasses.border} ${themeClasses.bgHover} ${themeClasses.text}`}
+              aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
             >
-              {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+              {isDark ? (
+                <Sun className="w-5 h-5" />
+              ) : (
+                <Moon className="w-5 h-5" />
+              )}
             </button>
             
             <Link href="/" className={`flex items-center space-x-2 px-4 py-2 rounded-full ${themeClasses.border} ${themeClasses.bgHover} transition-all duration-300`}>
