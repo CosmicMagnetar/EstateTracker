@@ -284,7 +284,7 @@ export default function Dashboard() {
   const { isDark, toggleDark, notifications, toggleNotifications } = useSettings();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
-  const cursorRef = useRef(null);
+  const cursorRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
   const handleMouseMove = (e: MouseEvent) => {

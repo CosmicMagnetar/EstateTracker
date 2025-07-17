@@ -21,7 +21,7 @@ export default function SettingsPage() {
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [activeTab, setActiveTab] = useState('growth');
   const heroRef = useRef(null);
-  const cursorRef = useRef(null);
+  const cursorRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleScroll = () => {

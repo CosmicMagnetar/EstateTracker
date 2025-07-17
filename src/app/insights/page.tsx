@@ -52,7 +52,7 @@ export default function InsightsPage() {
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [activeTab, setActiveTab] = useState('growth');
   const heroRef = useRef(null);
-  const cursorRef = useRef(null);
+  const cursorRef = useRef<HTMLDivElement>(null);
   const { isDark, toggleDark, notifications, toggleNotifications } = useSettings();
 
   useEffect(() => {
