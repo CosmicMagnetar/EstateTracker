@@ -287,33 +287,23 @@ export default function Dashboard() {
   const cursorRef = useRef(null);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrollY(window.scrollY);
-      setShowScrollTop(window.scrollY > 500);
-    };
+  const handleMouseMove = (e: MouseEvent) => {
+    const newPosition = { x: e.clientX, y: e.clientY };
+    setMousePosition(newPosition);
 
-    const handleMouseMove = (e) => {
-      const newPosition = { x: e.clientX, y: e.clientY };
-      setMousePosition(newPosition);
-      
-      if (cursorRef.current) {
-        requestAnimationFrame(() => {
-          if (cursorRef.current) {
-            cursorRef.current.style.transform = `translate(${newPosition.x - 8}px, ${newPosition.y - 8}px)`;
-          }
-        });
-      }
+    if (cursorRef.current) {
+      requestAnimationFrame(() => {
+        if (cursorRef.current) {
+          cursorRef.current.style.transform = `translate(${newPosition.x - 8}px, ${newPosition.y - 8}px)`;
+        }
+      });
+    }
+  };
 
-    };
+  window.addEventListener("mousemove", handleMouseMove);
+  return () => window.removeEventListener("mousemove", handleMouseMove);
+}, []);
 
-    window.addEventListener("scroll", handleScroll);
-    window.addEventListener("mousemove", handleMouseMove);
-    
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-      window.removeEventListener("mousemove", handleMouseMove);
-    };
-  }, []);
 
   useEffect(() => {
     // Mock data generation
