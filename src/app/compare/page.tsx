@@ -58,29 +58,27 @@ export default function ComparePage() {
   const [priceRange, setPriceRange] = useState([0, 2000000]);
   const [propertyType, setPropertyType] = useState("all");
   const [sortBy, setSortBy] = useState("price");
-  const cursorRef = useRef(null);
+  const cursorRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const handleScroll = () => setScrollY(window.scrollY);
-    const handleMouseMove = (e: { clientX: any; clientY: any; }) => {
-      const newPosition = { x: e.clientX, y: e.clientY };
-      setMousePosition(newPosition);
-      if (cursorRef.current) {
-        requestAnimationFrame(() => {
-          if (cursorRef.current) {
-            cursorRef.current.style.transform = `translate(${newPosition.x - 8}px, ${newPosition.y - 8}px)`;
-          }
-        });
-      }
 
-    };
-    window.addEventListener("scroll", handleScroll);
-    window.addEventListener("mousemove", handleMouseMove);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-      window.removeEventListener("mousemove", handleMouseMove);
-    };
-  }, []);
+useEffect(() => {
+  const handleMouseMove = (e: MouseEvent) => {
+    const newPosition = { x: e.clientX, y: e.clientY };
+    setMousePosition(newPosition);
+
+    if (cursorRef.current) {
+      requestAnimationFrame(() => {
+        if (cursorRef.current) {
+          cursorRef.current.style.transform = `translate(${newPosition.x - 8}px, ${newPosition.y - 8}px)`;
+        }
+      });
+    }
+  };
+
+  window.addEventListener("mousemove", handleMouseMove);
+  return () => window.removeEventListener("mousemove", handleMouseMove);
+}, []);
+
 
  const properties = [
     {
