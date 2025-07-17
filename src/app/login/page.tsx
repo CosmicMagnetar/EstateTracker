@@ -64,11 +64,11 @@ const AuthPages = () => {
   const cursorRef = useRef<HTMLDivElement>(null);
 
   // Form states
-  const [loginForm, setLoginForm] = useState({
-    email: "",
-    password: "",
-    rememberMe: false,
-  });
+  const [loginForm, setLoginForm] = useState<LoginForm>({
+  email: '',
+  password: ''
+});
+
 
   const [signupForm, setSignupForm] = useState({
     fullName: "",
