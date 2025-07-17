@@ -40,7 +40,7 @@ export default function ProfilePage() {
   const [scrollY, setScrollY] = useState(0);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const { isDark, toggleDark} = useSettings();
-  const cursorRef = useRef(null);
+  const cursorRef = useRef<HTMLDivElement>(null);
 
   const themeClasses = {
     bg: isDark ? 'bg-gray-900' : 'bg-gray-50',
