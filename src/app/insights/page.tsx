@@ -55,36 +55,6 @@ export default function InsightsPage() {
   const cursorRef = useRef<HTMLDivElement>(null);
   const { isDark, toggleDark, notifications, toggleNotifications } = useSettings();
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrollY(window.scrollY);
-      setShowScrollTop(window.scrollY > 500);
-    };
-
-    const handleMouseMove = (e: { clientX: any; clientY: any; }) => {
-      const newPosition = { x: e.clientX, y: e.clientY };
-      setMousePosition(newPosition);
-      
-      if (cursorRef.current) {
-        requestAnimationFrame(() => {
-          if (cursorRef.current) {
-            cursorRef.current.style.transform = `translate(${newPosition.x - 8}px, ${newPosition.y - 8}px)`;
-          }
-        });
-      }
-
-
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    window.addEventListener("mousemove", handleMouseMove);
-    
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-      window.removeEventListener("mousemove", handleMouseMove);
-    };
-  }, []);
-
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -190,15 +160,6 @@ const Logo = () => (
 
   return (
     <div className={`min-h-screen ${themeClasses.bg} ${themeClasses.text} overflow-x-hidden transition-colors duration-700`}>
-      {/* Custom Cursor */}
-      <div 
-        ref={cursorRef}
-        className={`fixed w-4 h-4 ${themeClasses.cursor} rounded-full pointer-events-none z-50 transition-all duration-100 ease-out mix-blend-difference`}
-        style={{
-          transform: `translate(${mousePosition.x - 8}px, ${mousePosition.y - 8}px) scale(${scrollY > 50 ? 1.5 : 1})`,
-          willChange: 'transform'
-        }}
-      />
 
       {/* Navigation */}
 

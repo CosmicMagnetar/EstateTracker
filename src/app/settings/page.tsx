@@ -49,33 +49,6 @@ export default function SettingsPage() {
   const heroRef = useRef<HTMLDivElement>(null);
   const cursorRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrollY(window.scrollY);
-      setShowScrollTop(window.scrollY > 500);
-    };
-
-    const handleMouseMove = (e: MouseEvent) => {
-      const newPosition = { x: e.clientX, y: e.clientY };
-      setMousePosition(newPosition);
-      
-      if (cursorRef.current) {
-        requestAnimationFrame(() => {
-          if (cursorRef.current) {
-            cursorRef.current.style.transform = `translate(${newPosition.x - 8}px, ${newPosition.y - 8}px)`;
-          }
-        });
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    window.addEventListener("mousemove", handleMouseMove);
-    
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-      window.removeEventListener("mousemove", handleMouseMove);
-    };
-  }, []);
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -115,14 +88,6 @@ export default function SettingsPage() {
 
   return (
     <div className={`min-h-screen ${themeClasses.bg} ${themeClasses.text} transition-all duration-700`}>
-      <div 
-        ref={cursorRef}
-        className={`fixed w-4 h-4 ${themeClasses.cursor} rounded-full pointer-events-none z-50 transition-all duration-100 ease-out mix-blend-difference`}
-        style={{
-          transform: `translate(${mousePosition.x - 8}px, ${mousePosition.y - 8}px) scale(${scrollY > 50 ? 1.5 : 1})`,
-          willChange: 'transform'
-        }}
-      />
 
       {/* Header */}
       <section id="settings" ref={heroRef} className="relative min-h-screen flex items-center justify-center overflow-hidden">

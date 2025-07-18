@@ -326,15 +326,6 @@ export default function LoginPage() {
 
   return (
     <div className={`min-h-screen ${themeClasses.bg} ${themeClasses.text} overflow-x-hidden transition-colors duration-700`}>
-      {/* Custom Cursor */}
-      <div 
-        ref={cursorRef}
-        className={`fixed w-4 h-4 ${themeClasses.cursor} rounded-full pointer-events-none z-50 transition-all duration-100 ease-out mix-blend-difference`}
-        style={{
-          transform: `translate(${mousePosition.x - 8}px, ${mousePosition.y - 8}px)`,
-          willChange: 'transform'
-        }}
-      />
 
       {/* Navigation */}
       <nav className={`fixed top-0 left-0 right-0 z-40 py-4 sm:py-6 ${themeClasses.navBg} backdrop-blur-xl shadow-xl`}>

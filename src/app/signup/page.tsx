@@ -56,29 +56,6 @@ export default function SignupPage() {
   const [googleLoading, setGoogleLoading] = useState(false);
   const cursorRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const handleScroll = () => setScrollY(window.scrollY);
-    const handleMouseMove = (e: globalThis.MouseEvent) => {
-      const newPosition = { x: e.clientX, y: e.clientY };
-      setMousePosition(newPosition);
-            
-      if (cursorRef.current) {
-        requestAnimationFrame(() => {
-          if (cursorRef.current) {
-            cursorRef.current.style.transform = `translate(${newPosition.x - 8}px, ${newPosition.y - 8}px)`;
-          }
-        });
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    window.addEventListener("mousemove", handleMouseMove);
-    
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-      window.removeEventListener("mousemove", handleMouseMove);
-    };
-  }, []);
 
   const themeClasses = {
     text: isDark ? "text-white" : "text-gray-900",
@@ -208,15 +185,6 @@ export default function SignupPage() {
 
   return (
     <div className={`min-h-screen ${themeClasses.bg} ${themeClasses.text} overflow-x-hidden transition-colors duration-700`}>
-      {/* Custom Cursor */}
-      <div 
-        ref={cursorRef}
-        className={`fixed w-4 h-4 ${themeClasses.cursor} rounded-full pointer-events-none z-50 transition-all duration-100 ease-out mix-blend-difference`}
-        style={{
-          transform: `translate(${mousePosition.x - 8}px, ${mousePosition.y - 8}px)`,
-          willChange: 'transform'
-        }}
-      />
 
       {/* Navigation */}
       <nav className={`fixed top-0 left-0 right-0 z-40 py-4 sm:py-6 ${themeClasses.navBg} backdrop-blur-xl shadow-xl`}>

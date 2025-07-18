@@ -93,35 +93,6 @@ export default function ProfilePage() {
   }, []);
 
   useEffect(() => {
-    function handleScroll() {
-      setScrollY(window.scrollY);
-    }
-
-    const handleMouseMove = (e: MouseEvent) => {
-      const newPosition = { x: e.clientX, y: e.clientY };
-      setMousePosition(newPosition);
-
-      if (cursorRef.current) {
-        requestAnimationFrame(() => {
-          if (cursorRef.current) {
-            cursorRef.current.style.transform = `translate(${
-              newPosition.x - 8
-            }px, ${newPosition.y - 8}px)`;
-          }
-        });
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    window.addEventListener("mousemove", handleMouseMove);
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-      window.removeEventListener("mousemove", handleMouseMove);
-    };
-  }, []);
-
-  useEffect(() => {
     const fetchUserAndProfile = async () => {
       const {
         data: { user },
@@ -292,17 +263,6 @@ export default function ProfilePage() {
     <div
       className={`min-h-screen ${themeClasses.bg} ${themeClasses.text} overflow-x-hidden transition-colors duration-700`}
     >
-      {/* Custom Cursor */}
-      <div
-        ref={cursorRef}
-        className={`fixed w-4 h-4 ${themeClasses.cursor} rounded-full pointer-events-none z-50 transition-all duration-100 ease-out mix-blend-difference`}
-        style={{
-          transform: `translate(${mousePosition.x - 8}px, ${
-            mousePosition.y - 8
-          }px) scale(${scrollY > 50 ? 1.5 : 1})`,
-          willChange: "transform",
-        }}
-      />
       <nav
   className={`fixed top-0 left-0 right-0 z-50 transition-all duration-700 ${
     scrollY > 50

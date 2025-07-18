@@ -61,24 +61,6 @@ export default function ComparePage() {
   const cursorRef = useRef<HTMLDivElement>(null);
 
 
-useEffect(() => {
-  const handleMouseMove = (e: MouseEvent) => {
-    const newPosition = { x: e.clientX, y: e.clientY };
-    setMousePosition(newPosition);
-
-    if (cursorRef.current) {
-      requestAnimationFrame(() => {
-        if (cursorRef.current) {
-          cursorRef.current.style.transform = `translate(${newPosition.x - 8}px, ${newPosition.y - 8}px)`;
-        }
-      });
-    }
-  };
-
-  window.addEventListener("mousemove", handleMouseMove);
-  return () => window.removeEventListener("mousemove", handleMouseMove);
-}, []);
-
 
  const properties = [
     {
@@ -242,15 +224,6 @@ const Logo = () => (
   return (
     <div className={`min-h-screen ${themeClasses.bg} ${themeClasses.text} overflow-x-hidden transition-colors duration-700`}>
       {/* Custom Cursor */}
-      <div 
-        ref={cursorRef}
-        className={`fixed w-4 h-4 ${themeClasses.cursor} rounded-full pointer-events-none z-50 transition-all duration-100 ease-out mix-blend-difference`}
-        style={{
-          transform: `translate(${mousePosition.x - 8}px, ${mousePosition.y - 8}px)`,
-          willChange: 'transform'
-        }}
-      />
-
       {/* Navigation */}
 
       {/* Hero Section */}

@@ -148,17 +148,6 @@ export default function HomePage() {
     <div
       className={`min-h-screen ${themeClasses.bg} ${themeClasses.text} overflow-x-hidden transition-colors duration-700`}
     >
-      {/* Custom Cursor */}
-      <div
-        ref={cursorRef}
-        className={`fixed w-4 h-4 ${themeClasses.cursor} rounded-full pointer-events-none z-50 transition-all duration-100 ease-out mix-blend-difference`}
-        style={{
-          transform: `translate(${mousePosition.x - 8}px, ${
-            mousePosition.y - 8
-          }px) scale(${scrollY > 50 ? 1.5 : 1})`,
-          willChange: "transform",
-        }}
-      />
 
       {/* Navigation */}
       <Header />

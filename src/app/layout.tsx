@@ -4,6 +4,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { SettingsProvider } from "./settings-context";
 import Header from "./components/Header"; // adjust path as needed
+import CustomCursor from "./components/CustomCursor";
+import RouteTransition from "./components/RouteTransition";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -38,6 +40,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased transition-colors duration-300`}
       >
         <SettingsProvider>
+          <CustomCursor themeClasses={{ cursor: "bg-[#00c950]" }}/>
           <Header />
           {children}
         </SettingsProvider>
