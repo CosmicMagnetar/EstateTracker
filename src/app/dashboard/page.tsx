@@ -299,26 +299,56 @@ export default function Dashboard() {
 
 
   useEffect(() => {
-    // Mock data generation
-    const mockProperties: Property[] = Array.from({ length: 50 }, (_, i) => ({
-      id: `prop-${i + 1}`,
-      title: `Premium ${['Apartment', 'Villa', 'Penthouse', 'Townhouse'][i % 4]} in ${['Mumbai', 'Delhi', 'Bangalore', 'Hyderabad', 'Chennai', 'Pune'][i % 6]}`,
-      price: Math.floor(Math.random() * 8000000) + 1000000,
-      size: Math.floor(Math.random() * 2000) + 800,
-      bedrooms: Math.floor(Math.random() * 4) + 1,
-      bathrooms: Math.floor(Math.random() * 3) + 1,
-      city: ['Mumbai', 'Delhi', 'Bangalore', 'Hyderabad', 'Chennai', 'Pune'][i % 6],
-      image: `https://picsum.photos/400/300?random=${i + 1}`,
-      rating: Math.floor(Math.random() * 2) + 4,
-      featured: Math.random() > 0.8,
-      priceChange: (Math.random() - 0.5) * 20
-    }));
+  const fetchProperties = async () => {
+    setLoading(true);
 
-    setTimeout(() => {
-      setProperties(mockProperties);
+    try {
+      const hitsPerPage = 20;
+
+      const res = await fetch(
+        `https://bayut.p.rapidapi.com/properties/list?locationExternalIDs=5002&purpose=for-sale&hitsPerPage=${hitsPerPage}&page=${currentPage}&lang=en`,
+        {
+          method: "GET",
+          headers: {
+            "X-RapidAPI-Key": process.env.NEXT_PUBLIC_RAPIDAPI_KEY || "f10aeefa9amshc5731bfa1a1ed9fp1573a7jsnd649eb86de42",
+            "X-RapidAPI-Host": process.env.NEXT_PUBLIC_RAPIDAPI_HOST || "bayut.p.rapidapi.com",
+          },
+        }
+      );
+
+      const data = await res.json();
+      console.log(`🔍 Page ${currentPage} Bayut API response:`, data);
+
+      if (!data?.hits || !Array.isArray(data.hits) || data.hits.length === 0) {
+        console.warn("No more listings found.");
+        return;
+      }
+
+      const mappedProperties: Property[] = data.hits.map((item: any, index: number) => ({
+        id: item.id?.toString() ?? `missing-id-${currentPage}-${index}`,
+        title: item.title ?? "Untitled Property",
+        price: item.price ?? 1000000,
+        size: item.area ? Math.floor(item.area) : 1000,
+        bedrooms: item.rooms ?? 1,
+        bathrooms: item.baths ?? 1,
+        city: item.location?.[0]?.name ?? "Unknown",
+        image: item.coverPhoto?.url ?? `https://picsum.photos/400/300?random=${currentPage}-${index}`,
+        rating: Math.floor(Math.random() * 2) + 4,
+        featured: Math.random() > 0.8,
+        priceChange: (Math.random() - 0.5) * 20,
+      }));
+
+      setProperties(prev => [...prev, ...mappedProperties]);
+    } catch (error) {
+      console.error("❌ Error fetching Bayut properties:", error);
+    } finally {
       setLoading(false);
-    }, 1000);
-  }, []);
+    }
+  };
+
+  fetchProperties();
+}, [currentPage]);
+
 
   const openModal = (property: Property) => {
     setSelectedProperty(property);

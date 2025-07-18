@@ -4,12 +4,6 @@ import { useEffect, useState, useRef } from "react";
 import {
   Mail,
   User,
-  Phone,
-  Building2,
-  Edit3,
-  Save,
-  Camera,
-  MapPin,
   Calendar,
   Shield,
   Star,
@@ -25,14 +19,17 @@ import {
   ChevronRight,
   Sun,
   Moon,
-  Menu,
-  X,
   LogOut,
+  Edit3,
+  Camera,
+  X,
+  Menu,
 } from "lucide-react";
 import { supabase } from "../../../supabaseClient";
 import { useSettings } from "../settings-context";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 type UserData = {
   fullName: string;
@@ -44,15 +41,18 @@ type UserData = {
 };
 
 export default function ProfilePage() {
+  const pathname = usePathname();
   const [userData, setUserData] = useState<UserData | null>(null);
   const [profile, setProfile] = useState<any>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const [scrollY, setScrollY] = useState(0);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const { isDark, toggleDark } = useSettings();
   const cursorRef = useRef<HTMLDivElement | null>(null);
   const [user, setUser] = useState<SupabaseUser | null>(null);
 
+  // ✅ Consistent theme classes with header
   const themeClasses = {
     text: isDark ? "text-white" : "text-gray-900",
     textSecondary: isDark ? "text-gray-300" : "text-gray-600",
@@ -60,12 +60,10 @@ export default function ProfilePage() {
     border: isDark ? "border-gray-700" : "border-gray-200",
     navBg: isDark ? "bg-gray-900/90" : "bg-white/90",
     accent: "text-green-500",
-    // ✅ Added dropdown-specific theme classes
     dropdownBg: isDark ? "bg-gray-800" : "bg-white",
     dropdownHover: isDark ? "hover:bg-gray-700" : "hover:bg-gray-50",
     dropdownText: isDark ? "text-gray-300" : "text-gray-700",
     dropdownTextHover: isDark ? "hover:text-white" : "hover:text-gray-900",
-    // ✅ Added danger/logout colors that work with both themes
     dangerText: isDark ? "text-red-400" : "text-red-600",
     dangerTextHover: isDark ? "hover:text-red-300" : "hover:text-red-500",
     dangerBgHover: isDark ? "hover:bg-red-900/20" : "hover:bg-red-50",
@@ -82,6 +80,17 @@ export default function ProfilePage() {
       ? "from-gray-900 via-gray-800 to-gray-900"
       : "from-white via-gray-50 to-white",
   };
+
+  // ✅ Mobile detection
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   useEffect(() => {
     function handleScroll() {
@@ -154,8 +163,6 @@ export default function ProfilePage() {
         });
       } else {
         console.error("❌ Profile fetch error:", profileError);
-        console.warn("🧪 user.id is:", user.id);
-
         setUserData({
           fullName: user.email || "",
           email: user.email || "",
@@ -204,7 +211,7 @@ export default function ProfilePage() {
   };
 
   const isActive = (href: string) => {
-    return window.location.pathname === href;
+    return pathname === href;
   };
 
   const navLinks = [
@@ -296,197 +303,186 @@ export default function ProfilePage() {
           willChange: "transform",
         }}
       />
-
-      {/* Header Navigation */}
       <nav
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-700 ${
-          scrollY > 50
-            ? `py-4 ${themeClasses.navBg} backdrop-blur-xl shadow-xl`
-            : "py-6 bg-transparent"
-        } border-b ${themeClasses.border}`}
-      >
-        <div className="max-w-7xl mx-auto px-8 flex items-center justify-between">
-          <Link href="/" className="flex items-center space-x-3">
-          <img src="/logo.png" className="w-8 h-8 rounded-full" alt="Logo" />
-          <span className="text-2xl font-light tracking-wider">ZonePulse</span>
+  className={`fixed top-0 left-0 right-0 z-50 transition-all duration-700 ${
+    scrollY > 50
+      ? `py-4 ${themeClasses.navBg} backdrop-blur-xl shadow-xl`
+      : "py-6 bg-transparent"
+  } border-b ${themeClasses.border}`}
+>
+  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
+    <Link href="/" className="flex items-center space-x-3">
+      <img src="/logo.png" className="w-8 h-8 rounded-full" alt="Logo" />
+      <span className={`text-xl sm:text-2xl font-light tracking-wider ${themeClasses.text}`}>
+        ZonePulse
+      </span>
+    </Link>
+
+    <div className="hidden md:flex items-center space-x-8">
+      {navLinks.map((link) => (
+        <Link
+          key={link.href}
+          href={link.href}
+          className={`text-sm font-light transition-colors duration-200 ${
+            isActive(link.href)
+              ? "text-green-500"
+              : themeClasses.textSecondary
+          } hover:text-green-500`}
+        >
+          {link.label}
         </Link>
+      ))}
+    </div>
 
-          <div className="hidden md:flex items-center space-x-8">
-            {navLinks.map((link) => (
-              <a
-                key={link.href}
-                href={link.href}
-                className={`text-sm font-light transition-colors duration-200 ${
-                  isActive(link.href)
-                    ? "text-green-500"
-                    : themeClasses.textSecondary
-                } hover:text-green-500`}
-              >
-                {link.label}
-              </a>
-            ))}
-          </div>
+    <div className="flex items-center space-x-2 sm:space-x-4">
+      <button
+        onClick={toggleDark}
+        className={`p-2 rounded-full border transition-colors duration-200 ${themeClasses.border} ${themeClasses.bgHover} ${themeClasses.text}`}
+        aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+      >
+        {isDark ? <Sun className="w-4 h-4 sm:w-5 sm:h-5" /> : <Moon className="w-4 h-4 sm:w-5 sm:h-5" />}
+      </button>
 
-          <div className="flex items-center space-x-4">
-            <button
-              onClick={toggleDark}
-              className={`p-2 rounded-full border transition-colors duration-200 ${themeClasses.border} ${themeClasses.bgHover} ${themeClasses.text}`}
-              aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
-            >
-              {isDark ? (
-                <Sun className="w-5 h-5" />
-              ) : (
-                <Moon className="w-5 h-5" />
-              )}
-            </button>
-
-            {user ? (
-              <div className="relative">
-                <button
-                  onClick={() => setIsMenuOpen(!isMenuOpen)}
-                  className="flex items-center space-x-2 text-sm"
-                >
-                  {profile?.avatar_url && (
-                    <img
-                      src={profile.avatar_url}
-                      alt="Avatar"
-                      className="w-6 h-6 rounded-full"
-                    />
-                  )}
-                  <User className="w-4 h-4" />
-                  <span>{profile?.name || user.email}</span>
-                </button>
-
-                {isMenuOpen && (
-                  <div
-                    className={`absolute right-0 mt-2 w-48 rounded-lg border ${
-                      themeClasses.border
-                    } ${isDark ? "bg-gray-800" : "bg-white"} shadow-xl`}
-                  >
-                    <a
-                      href="/profile"
-                      className="w-full flex items-center px-4 py-3 text-sm hover:text-green-500 hover:bg-green-50 transition"
-                    >
-                      <User className="w-4 h-4 mr-2" />
-                      Profile
-                    </a>
-                    <button
-                      onClick={handleLogout}
-                      className="w-full flex items-center px-4 py-3 text-sm hover:text-red-500 hover:bg-red-50 transition"
-                    >
-                      <LogOut className="w-4 h-4 mr-2" />
-                      Logout
-                    </button>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <div className="flex items-center space-x-4">
-                <a
-                  href="/login"
-                  className="text-sm font-light hover:text-green-500 transition"
-                >
-                  Login
-                </a>
-                <a
-                  href="/signup"
-                  className="text-sm font-light hover:text-green-500 transition"
-                >
-                  Sign Up
-                </a>
-              </div>
-            )}
-          </div>
-
-          {/* Mobile Menu Toggle */}
+      {user ? (
+        <div className="relative">
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="md:hidden p-2"
+            className={`hidden md:flex items-center space-x-2 text-sm transition-colors duration-200 ${themeClasses.text} ${themeClasses.bgHover} px-3 py-2 rounded-lg`}
           >
-            {isMenuOpen ? (
-              <X className="w-6 h-6" />
-            ) : (
-              <Menu className="w-6 h-6" />
+            {profile?.avatar_url && (
+              <img src={profile.avatar_url} alt="Avatar" className="w-6 h-6 rounded-full" />
             )}
+            <span className="max-w-32 truncate">{profile?.name || user.email}</span>
           </button>
-        </div>
 
-        {/* Mobile Menu Items */}
-        {isMenuOpen && (
-          <div
-            className={`md:hidden px-8 py-6 space-y-4 ${themeClasses.navBg} border-t ${themeClasses.border}`}
-          >
-            {navLinks.map((link) => (
-              <a
-                key={link.href}
-                href={link.href}
-                className={`block text-sm font-light transition-colors duration-200 ${
-                  isActive(link.href)
-                    ? "text-green-500"
-                    : themeClasses.textSecondary
-                } hover:text-green-500`}
+          {isMenuOpen && !isMobile && (
+            <div
+              className={`absolute right-0 mt-2 w-48 rounded-lg border ${themeClasses.border} ${isDark ? "bg-gray-800" : "bg-white"} shadow-xl`}
+            >
+              <Link
+                href="/profile"
+                className="w-full flex items-center px-4 py-3 text-sm hover:text-green-500 hover:bg-green-50 transition"
               >
-                {link.label}
-              </a>
-            ))}
-            {user && (
+                <User className="w-4 h-4 mr-2" />
+                Profile
+              </Link>
               <button
                 onClick={handleLogout}
-                className="w-full text-left text-sm text-red-500 mt-4"
+                className="w-full flex items-center px-4 py-3 text-sm hover:text-red-500 hover:bg-red-50 transition"
               >
+                <LogOut className="w-4 h-4 mr-2" />
                 Logout
               </button>
-            )}
-          </div>
-        )}
-      </nav>
+            </div>
+          )}
+        </div>
+      ) : (
+        <div className="hidden md:flex items-center space-x-4">
+          <Link
+            href="/login"
+            className="text-sm font-light hover:text-green-500 transition"
+          >
+            Login
+          </Link>
+          <Link
+            href="/signup"
+            className="text-sm font-light hover:text-green-500 transition"
+          >
+            Sign Up
+          </Link>
+        </div>
+      )}
 
-      {/* Animated Background Elements */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div
-          className={`absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-br from-green-500/10 to-emerald-500/10 rounded-full blur-3xl`}
-          style={{
-            transform: `translate(${mousePosition.x * 0.02}px, ${
-              mousePosition.y * 0.02
-            }px) translateY(${scrollY * 0.5}px)`,
-            opacity: Math.max(0, 0.7 - scrollY * 0.001),
-          }}
-        />
-        <div
-          className={`absolute bottom-1/4 right-1/4 w-80 h-80 bg-gradient-to-br from-emerald-500/10 to-green-400/10 rounded-full blur-3xl`}
-          style={{
-            transform: `translate(${mousePosition.x * -0.02}px, ${
-              mousePosition.y * -0.02
-            }px) translateY(${scrollY * -0.3}px)`,
-            opacity: Math.max(0, 0.7 - scrollY * 0.001),
-          }}
-        />
-      </div>
+      <button
+        onClick={() => setIsMenuOpen(!isMenuOpen)}
+        className="md:hidden p-2 transition-colors duration-200 ${themeClasses.text} ${themeClasses.bgHover} rounded-lg"
+        aria-label="Toggle mobile menu"
+      >
+        {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+      </button>
+    </div>
+  </div>
+
+  {isMenuOpen && (
+    <div
+      className={`md:hidden px-4 sm:px-6 py-6 space-y-4 ${themeClasses.navBg} border-t ${themeClasses.border} backdrop-blur-xl`}
+    >
+      {navLinks.map((link) => (
+        <Link
+          key={link.href}
+          href={link.href}
+          className={`block text-sm font-light transition-colors duration-200 ${
+            isActive(link.href)
+              ? "text-green-500"
+              : themeClasses.textSecondary
+          } hover:text-green-500`}
+          onClick={() => setIsMenuOpen(false)}
+        >
+          {link.label}
+        </Link>
+      ))}
+
+      {user && (
+        <div className={`pt-4 border-t ${themeClasses.border} space-y-3`}>
+          <div className={`flex items-center space-x-3 ${themeClasses.textSecondary}`}>
+            {profile?.avatar_url && (
+              <img
+                src={profile.avatar_url}
+                alt="Avatar"
+                className="w-8 h-8 rounded-full"
+              />
+            )}
+            <div>
+              <div className="text-sm font-medium">{profile?.name || user.email}</div>
+            </div>
+          </div>
+
+          <Link
+            href="/profile"
+            className={`flex items-center space-x-2 text-sm font-light transition-colors duration-200 ${themeClasses.textSecondary} hover:text-green-500`}
+            onClick={() => setIsMenuOpen(false)}
+          >
+            <User className="w-4 h-4" />
+            <span>Profile</span>
+          </Link>
+
+          <button
+            onClick={handleLogout}
+            className={`flex items-center space-x-2 text-sm font-light transition-colors duration-200 ${themeClasses.dangerText} ${themeClasses.dangerTextHover}`}
+          >
+            <LogOut className="w-4 h-4" />
+            <span>Logout</span>
+          </button>
+        </div>
+      )}
+    </div>
+  )}
+</nav>
 
       {/* Hero Section */}
-      <section className="relative pt-24 pb-16 px-8">
+      <section className="relative pt-24 pb-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
-          <div className="mb-16">
+          <div className="mb-8 sm:mb-16">
             <div
-              className={`inline-flex items-center space-x-2 border ${themeClasses.accentBorder} rounded-full px-6 py-3 mb-8 backdrop-blur-sm bg-green-500/10 shadow-lg ${themeClasses.accentGlow}`}
+              className={`inline-flex items-center space-x-2 border ${themeClasses.accentBorder} rounded-full px-4 py-2 sm:px-6 sm:py-3 mb-4 sm:mb-8 backdrop-blur-sm bg-green-500/10 shadow-lg ${themeClasses.accentGlow}`}
             >
               <User className="w-4 h-4 text-green-500" />
               <span
-                className={`text-sm font-light tracking-wide ${themeClasses.accent}`}
+                className={`text-xs sm:text-sm font-light tracking-wide ${themeClasses.accent}`}
               >
                 Profile Dashboard
               </span>
             </div>
 
-            <h1 className="text-5xl md:text-6xl font-light mb-6 tracking-tight">
+            <h1 className="text-3xl sm:text-5xl md:text-6xl font-light mb-4 sm:mb-6 tracking-tight">
               <span className={themeClasses.textMuted}>Your</span>{" "}
               <span className="bg-gradient-to-r from-green-500 to-emerald-500 bg-clip-text text-transparent">
                 Profile
               </span>
             </h1>
             <p
-              className={`text-xl font-light ${themeClasses.textSecondary} max-w-2xl leading-relaxed`}
+              className={`text-base sm:text-xl font-light ${themeClasses.textSecondary} max-w-2xl leading-relaxed`}
             >
               Manage your account, track your activity, and customize your
               experience
@@ -495,61 +491,61 @@ export default function ProfilePage() {
 
           {/* Main Profile Card */}
           <div
-            className={`relative p-12 border ${themeClasses.border} rounded-3xl transition-all duration-700 ${themeClasses.borderHover} ${themeClasses.cardBg} hover:shadow-2xl mb-12 group`}
+            className={`relative p-4 sm:p-8 md:p-12 border ${themeClasses.border} rounded-xl sm:rounded-2xl md:rounded-3xl transition-all duration-700 ${themeClasses.borderHover} ${themeClasses.cardBg} hover:shadow-xl sm:hover:shadow-2xl mb-8 sm:mb-12 group`}
           >
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 md:gap-12">
               {/* Profile Info */}
-              <div className="space-y-8">
-                <div className="flex items-center space-x-6">
+              <div className="space-y-6 sm:space-y-8">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-6 space-y-4 sm:space-y-0">
                   <div className="relative">
                     {userData.avatar ? (
                       <img
                         src={userData.avatar}
                         alt="Profile"
-                        className="w-24 h-24 rounded-full object-cover shadow-lg"
+                        className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 rounded-full object-cover shadow-lg"
                       />
                     ) : (
                       <div
-                        className={`w-24 h-24 rounded-full bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center text-white text-3xl font-light shadow-lg ${themeClasses.accentGlow}`}
+                        className={`w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 rounded-full bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center text-white text-xl sm:text-2xl md:text-3xl font-light shadow-lg ${themeClasses.accentGlow}`}
                       >
                         {userData.fullName?.charAt(0) || "U"}
                       </div>
                     )}
                     <button
-                      className={`absolute -bottom-2 -right-2 w-8 h-8 rounded-full bg-green-500 text-white flex items-center justify-center shadow-md hover:bg-green-600 transition-colors duration-300`}
+                      className={`absolute -bottom-1 -right-1 sm:-bottom-2 sm:-right-2 w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-green-500 text-white flex items-center justify-center shadow-md hover:bg-green-600 transition-colors duration-300`}
                     >
-                      <Camera className="w-4 h-4" />
+                      <Camera className="w-3 h-3 sm:w-4 sm:h-4" />
                     </button>
                   </div>
                   <div>
-                    <h2 className="text-3xl font-light tracking-wide">
+                    <h2 className="text-xl sm:text-2xl md:text-3xl font-light tracking-wide break-words">
                       {userData?.fullName}
                     </h2>
                     <p
-                      className={`${themeClasses.textSecondary} font-light capitalize`}
+                      className={`${themeClasses.textSecondary} font-light capitalize text-sm sm:text-base`}
                     >
                       {userData.provider === "google"
                         ? "Google Account"
                         : "Email Account"}
                     </p>
-                    <div className="flex items-center space-x-2 mt-2">
-                      <Award className="w-4 h-4 text-green-500" />
-                      <span className={`text-sm ${themeClasses.accent}`}>
+                    <div className="flex items-center space-x-2 mt-1 sm:mt-2">
+                      <Award className="w-3 h-3 sm:w-4 sm:h-4 text-green-500" />
+                      <span className={`text-xs sm:text-sm ${themeClasses.accent}`}>
                         Active User
                       </span>
                     </div>
                   </div>
                 </div>
 
-                <div className="space-y-6">
+                <div className="space-y-4 sm:space-y-6">
                   {[
                     {
-                      icon: <Mail className="w-5 h-5 text-green-500" />,
+                      icon: <Mail className="w-4 h-4 sm:w-5 sm:h-5 text-green-500" />,
                       label: "Email",
                       value: userData.email,
                     },
                     {
-                      icon: <User className="w-5 h-5 text-emerald-500" />,
+                      icon: <User className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-500" />,
                       label: "Login Method",
                       value:
                         userData.provider === "google"
@@ -557,32 +553,34 @@ export default function ProfilePage() {
                           : "Email & Password",
                     },
                     {
-                      icon: <Calendar className="w-5 h-5 text-green-600" />,
+                      icon: <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-green-600" />,
                       label: "Joined",
                       value: userData.joined,
                     },
                     {
-                      icon: <Activity className="w-5 h-5 text-emerald-600" />,
+                      icon: <Activity className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600" />,
                       label: "Last Sign In",
                       value: userData.lastSignIn,
                     },
                   ].map((item, index) => (
                     <div
                       key={index}
-                      className="flex items-center space-x-4 group/item"
+                      className="flex items-center space-x-3 sm:space-x-4 group/item"
                     >
                       <div
-                        className={`w-10 h-10 rounded-full border ${themeClasses.border} flex items-center justify-center group-hover/item:border-green-500 transition-all duration-300`}
+                        className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full border ${themeClasses.border} flex items-center justify-center group-hover/item:border-green-500 transition-all duration-300`}
                       >
                         {item.icon}
                       </div>
                       <div className="flex-1">
                         <p
-                          className={`text-sm font-light ${themeClasses.textMuted} mb-1`}
+                          className={`text-xs sm:text-sm font-light ${themeClasses.textMuted} mb-1`}
                         >
                           {item.label}
                         </p>
-                        <p className="font-light tracking-wide">{item.value}</p>
+                        <p className="font-light tracking-wide text-sm sm:text-base">
+                          {item.value}
+                        </p>
                       </div>
                     </div>
                   ))}
@@ -590,26 +588,26 @@ export default function ProfilePage() {
               </div>
 
               {/* Stats Grid */}
-              <div className="space-y-8">
-                <div className="grid grid-cols-2 gap-6">
+              <div className="space-y-6 sm:space-y-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                   {stats.map((stat, index) => (
                     <div
                       key={index}
-                      className={`p-6 border ${themeClasses.border} rounded-2xl transition-all duration-500 ${themeClasses.borderHover} ${themeClasses.bgHover} hover:shadow-lg group/stat`}
+                      className={`p-4 sm:p-6 border ${themeClasses.border} rounded-xl sm:rounded-2xl transition-all duration-500 ${themeClasses.borderHover} ${themeClasses.bgHover} hover:shadow-lg group/stat`}
                     >
-                      <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center justify-between mb-3 sm:mb-4">
                         <div
-                          className={`w-10 h-10 rounded-full border ${themeClasses.border} flex items-center justify-center group-hover/stat:border-green-500 transition-all duration-300 ${stat.color}`}
+                          className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full border ${themeClasses.border} flex items-center justify-center group-hover/stat:border-green-500 transition-all duration-300 ${stat.color}`}
                         >
                           {stat.icon}
                         </div>
-                        <ChevronRight className="w-4 h-4 text-gray-400 group-hover/stat:text-green-500 transition-colors duration-300" />
+                        <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4 text-gray-400 group-hover/stat:text-green-500 transition-colors duration-300" />
                       </div>
-                      <div className={`text-2xl font-light mb-1 ${stat.color}`}>
+                      <div className={`text-xl sm:text-2xl font-light mb-1 ${stat.color}`}>
                         {stat.value}
                       </div>
                       <div
-                        className={`text-sm font-light ${themeClasses.textSecondary}`}
+                        className={`text-xs sm:text-sm font-light ${themeClasses.textSecondary}`}
                       >
                         {stat.label}
                       </div>
@@ -617,19 +615,19 @@ export default function ProfilePage() {
                   ))}
                 </div>
 
-                <div className="flex space-x-4">
+                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                   <button
-                    className={`flex-1 group relative overflow-hidden bg-green-500 text-white hover:bg-green-600 px-6 py-4 rounded-full font-light transition-all duration-500 tracking-wide shadow-lg hover:shadow-xl ${themeClasses.accentGlow}`}
+                    className={`flex-1 group relative overflow-hidden bg-green-500 text-white hover:bg-green-600 px-4 py-3 sm:px-6 sm:py-4 rounded-full font-light transition-all duration-500 tracking-wide shadow-lg hover:shadow-xl ${themeClasses.accentGlow}`}
                   >
                     <span className="relative z-10 flex items-center justify-center space-x-2">
-                      <Edit3 className="w-4 h-4" />
-                      <span>Edit Profile</span>
+                      <Edit3 className="w-3 h-3 sm:w-4 sm:h-4" />
+                      <span className="text-xs sm:text-sm">Edit Profile</span>
                     </span>
                   </button>
                   <button
-                    className={`group flex items-center justify-center space-x-2 px-6 py-4 rounded-full font-light border ${themeClasses.accentBorder} text-green-500 hover:bg-green-500 hover:text-white transition-all duration-500 tracking-wide`}
+                    className={`group flex items-center justify-center space-x-2 px-4 py-3 sm:px-6 sm:py-4 rounded-full font-light border ${themeClasses.accentBorder} text-green-500 hover:bg-green-500 hover:text-white transition-all duration-500 tracking-wide text-xs sm:text-sm`}
                   >
-                    <Settings className="w-4 h-4" />
+                    <Settings className="w-3 h-3 sm:w-4 sm:h-4" />
                     <span>Settings</span>
                   </button>
                 </div>
@@ -638,29 +636,29 @@ export default function ProfilePage() {
           </div>
 
           {/* Activity Feed */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
             <div className="lg:col-span-2">
               <div
-                className={`p-8 border ${themeClasses.border} rounded-2xl transition-all duration-700 ${themeClasses.borderHover} ${themeClasses.cardBg} hover:shadow-xl`}
+                className={`p-4 sm:p-6 md:p-8 border ${themeClasses.border} rounded-xl sm:rounded-2xl transition-all duration-700 ${themeClasses.borderHover} ${themeClasses.cardBg} hover:shadow-lg sm:hover:shadow-xl`}
               >
-                <h3 className="text-2xl font-light mb-8 tracking-wide">
+                <h3 className="text-xl sm:text-2xl font-light mb-6 tracking-wide">
                   Recent Activity
                 </h3>
-                <div className="space-y-6">
+                <div className="space-y-4 sm:space-y-6">
                   {activities.map((activity, index) => (
                     <div
                       key={index}
-                      className="flex items-start space-x-4 group/activity"
+                      className="flex items-start space-x-3 sm:space-x-4 group/activity"
                     >
                       <div
-                        className={`w-10 h-10 rounded-full border ${themeClasses.border} flex items-center justify-center group-hover/activity:border-green-500 transition-all duration-300 text-green-500`}
+                        className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full border ${themeClasses.border} flex items-center justify-center group-hover/activity:border-green-500 transition-all duration-300 text-green-500`}
                       >
                         {activity.icon}
                       </div>
                       <div className="flex-1">
-                        <p className="font-light mb-1">{activity.action}</p>
+                        <p className="font-light mb-1 text-sm sm:text-base">{activity.action}</p>
                         <p
-                          className={`text-sm ${themeClasses.textSecondary} mb-2`}
+                          className={`text-xs sm:text-sm ${themeClasses.textSecondary} mb-1 sm:mb-2`}
                         >
                           {activity.detail}
                         </p>
@@ -674,40 +672,40 @@ export default function ProfilePage() {
               </div>
             </div>
 
-            <div className="space-y-8">
+            <div className="space-y-6 sm:space-y-8">
               {/* Quick Actions */}
               <div
-                className={`p-6 border ${themeClasses.border} rounded-2xl transition-all duration-700 ${themeClasses.borderHover} ${themeClasses.cardBg} hover:shadow-xl`}
+                className={`p-4 sm:p-6 border ${themeClasses.border} rounded-xl sm:rounded-2xl transition-all duration-700 ${themeClasses.borderHover} ${themeClasses.cardBg} hover:shadow-lg sm:hover:shadow-xl`}
               >
-                <h3 className="text-xl font-light mb-6 tracking-wide">
+                <h3 className="text-lg sm:text-xl font-light mb-4 sm:mb-6 tracking-wide">
                   Quick Actions
                 </h3>
-                <div className="space-y-4">
+                <div className="space-y-3 sm:space-y-4">
                   {[
                     {
-                      icon: <Shield className="w-4 h-4" />,
+                      icon: <Shield className="w-3 h-3 sm:w-4 sm:h-4" />,
                       label: "Privacy Settings",
                       color: "text-green-500",
                     },
                     {
-                      icon: <Bell className="w-4 h-4" />,
+                      icon: <Bell className="w-3 h-3 sm:w-4 sm:w-4" />,
                       label: "Notifications",
                       color: "text-emerald-500",
                     },
                     {
-                      icon: <Activity className="w-4 h-4" />,
+                      icon: <Activity className="w-3 h-3 sm:w-4 sm:h-4" />,
                       label: "Activity Log",
                       color: "text-green-600",
                     },
                     {
-                      icon: <Star className="w-4 h-4" />,
+                      icon: <Star className="w-3 h-3 sm:w-4 sm:h-4" />,
                       label: "Preferences",
                       color: "text-emerald-600",
                     },
                   ].map((action, index) => (
                     <button
                       key={index}
-                      className={`w-full flex items-center space-x-3 p-3 rounded-lg border ${themeClasses.border} transition-all duration-300 ${themeClasses.borderHover} ${themeClasses.bgHover} hover:shadow-md group`}
+                      className={`w-full flex items-center space-x-2 sm:space-x-3 p-2 sm:p-3 rounded-lg border ${themeClasses.border} transition-all duration-300 ${themeClasses.borderHover} ${themeClasses.bgHover} hover:shadow-md group text-xs sm:text-sm`}
                     >
                       <div
                         className={`${action.color} group-hover:scale-110 transition-transform duration-300`}
@@ -715,7 +713,7 @@ export default function ProfilePage() {
                         {action.icon}
                       </div>
                       <span className="font-light">{action.label}</span>
-                      <ChevronRight className="w-4 h-4 text-gray-400 ml-auto group-hover:text-green-500 transition-colors duration-300" />
+                      <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4 text-gray-400 ml-auto group-hover:text-green-500 transition-colors duration-300" />
                     </button>
                   ))}
                 </div>
@@ -723,23 +721,23 @@ export default function ProfilePage() {
 
               {/* Plan Info */}
               <div
-                className={`p-6 border ${themeClasses.border} rounded-2xl transition-all duration-700 ${themeClasses.borderHover} ${themeClasses.cardBg} hover:shadow-xl`}
+                className={`p-4 sm:p-6 border ${themeClasses.border} rounded-xl sm:rounded-2xl transition-all duration-700 ${themeClasses.borderHover} ${themeClasses.cardBg} hover:shadow-lg sm:hover:shadow-xl`}
               >
-                <div className="flex items-center space-x-3 mb-4">
-                  <Award className="w-5 h-5 text-green-500" />
-                  <h3 className="text-xl font-light tracking-wide">
+                <div className="flex items-center space-x-2 sm:space-x-3 mb-3 sm:mb-4">
+                  <Award className="w-4 h-4 sm:w-5 sm:h-5 text-green-500" />
+                  <h3 className="text-lg sm:text-xl font-light tracking-wide">
                     Account Status
                   </h3>
                 </div>
-                <p className={`text-2xl font-light text-green-500 mb-2`}>
+                <p className={`text-xl sm:text-2xl font-light text-green-500 mb-1 sm:mb-2`}>
                   Active
                 </p>
-                <p className={`text-sm ${themeClasses.textSecondary} mb-4`}>
+                <p className={`text-xs sm:text-sm ${themeClasses.textSecondary} mb-3 sm:mb-4`}>
                   Signed in via{" "}
                   {userData.provider === "google" ? "Google" : "Email"}
                 </p>
                 <button
-                  className={`w-full py-3 rounded-full font-light border ${themeClasses.accentBorder} text-green-500 hover:bg-green-500 hover:text-white transition-all duration-300 tracking-wide`}
+                  className={`w-full py-2 sm:py-3 rounded-full font-light border ${themeClasses.accentBorder} text-green-500 hover:bg-green-500 hover:text-white transition-all duration-300 tracking-wide text-xs sm:text-sm`}
                 >
                   Account Settings
                 </button>

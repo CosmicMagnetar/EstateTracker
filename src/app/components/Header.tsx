@@ -24,8 +24,20 @@ export default function Header() {
   const [user, setUser] = useState<SupabaseUser | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const [scrollY, setScrollY] = useState(0);
   const { isDark, toggleDark } = useSettings();
+
+  // ✅ Mobile detection
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -82,6 +94,7 @@ export default function Header() {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
+    setIsMenuOpen(false);
     router.push("/login");
   };
 
@@ -93,12 +106,10 @@ export default function Header() {
     border: isDark ? "border-gray-700" : "border-gray-200",
     navBg: isDark ? "bg-gray-900/90" : "bg-white/90",
     accent: "text-green-500",
-    // ✅ Added dropdown-specific theme classes
     dropdownBg: isDark ? "bg-gray-800" : "bg-white",
     dropdownHover: isDark ? "hover:bg-gray-700" : "hover:bg-gray-50",
     dropdownText: isDark ? "text-gray-300" : "text-gray-700",
     dropdownTextHover: isDark ? "hover:text-white" : "hover:text-gray-900",
-    // ✅ Added danger/logout colors that work with both themes
     dangerText: isDark ? "text-red-400" : "text-red-600",
     dangerTextHover: isDark ? "hover:text-red-300" : "hover:text-red-500",
     dangerBgHover: isDark ? "hover:bg-red-900/20" : "hover:bg-red-50",
@@ -111,6 +122,19 @@ export default function Header() {
     { href: "/settings", label: "Settings" },
   ];
 
+  // ✅ Helper function to get display name
+  const getDisplayName = () => {
+    if (profile?.name) return profile.name;
+    if (user?.email) {
+      // On mobile, show just the username part of email
+      if (isMobile) {
+        return user.email.split('@')[0];
+      }
+      return user.email;
+    }
+    return "User";
+  };
+
   return (
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-700 ${
@@ -119,16 +143,16 @@ export default function Header() {
           : "py-6 bg-transparent"
       } border-b ${themeClasses.border}`}
     >
-      <div className="max-w-7xl mx-auto px-8 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
         {/* ✅ Logo with proper theme classes */}
         <Link href="/" className="flex items-center space-x-3">
           <img src="/logo.png" className="w-8 h-8 rounded-full" alt="Logo" />
-          <span className={`text-2xl font-light tracking-wider ${themeClasses.text}`}>
+          <span className={`text-xl sm:text-2xl font-light tracking-wider ${themeClasses.text}`}>
             ZonePulse
           </span>
         </Link>
 
-        {/* ✅ Desktop Navigation */}
+        {/* ✅ Desktop Navigation - hidden on mobile */}
         <div className="hidden md:flex items-center space-x-8">
           {navLinks.map((link) => (
             <Link
@@ -146,7 +170,7 @@ export default function Header() {
         </div>
 
         {/* ✅ Right side controls */}
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-2 sm:space-x-4">
           {/* ✅ Theme toggle button */}
           <button
             onClick={toggleDark}
@@ -154,18 +178,19 @@ export default function Header() {
             aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
           >
             {isDark ? (
-              <Sun className="w-5 h-5" />
+              <Sun className="w-4 h-4 sm:w-5 sm:h-5" />
             ) : (
-              <Moon className="w-5 h-5" />
+              <Moon className="w-4 h-4 sm:w-5 sm:h-5" />
             )}
           </button>
 
-          {/* ✅ User menu or auth links */}
+          {/* ✅ Desktop User menu or auth links - hidden on mobile */}
           {user ? (
             <div className="relative">
+              {/* ✅ Desktop user menu */}
               <button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className={`flex items-center space-x-2 text-sm transition-colors duration-200 ${themeClasses.text} ${themeClasses.bgHover} px-3 py-2 rounded-lg`}
+                className={`hidden md:flex items-center space-x-2 text-sm transition-colors duration-200 ${themeClasses.text} ${themeClasses.bgHover} px-3 py-2 rounded-lg`}
                 aria-label="User menu"
               >
                 {profile?.avatar_url && (
@@ -175,11 +200,11 @@ export default function Header() {
                     className="w-6 h-6 rounded-full"
                   />
                 )}
-                <span>{profile?.name || user.email}</span>
+                <span className="max-w-32 truncate">{getDisplayName()}</span>
               </button>
 
-              {/* ✅ Fixed dropdown menu with proper theme classes */}
-              {isMenuOpen && (
+              {/* ✅ Desktop dropdown menu */}
+              {isMenuOpen && !isMobile && (
                 <div
                   className={`absolute right-0 mt-2 w-48 rounded-lg border shadow-xl z-50 ${themeClasses.border} ${themeClasses.dropdownBg}`}
                 >
@@ -202,7 +227,8 @@ export default function Header() {
               )}
             </div>
           ) : (
-            <div className="flex items-center space-x-4">
+            // ✅ Desktop auth links - hidden on mobile
+            <div className="hidden md:flex items-center space-x-4">
               <Link
                 href="/login"
                 className={`text-sm font-light transition-colors duration-200 ${themeClasses.textSecondary} hover:text-green-500`}
@@ -225,19 +251,20 @@ export default function Header() {
             aria-label="Toggle mobile menu"
           >
             {isMenuOpen ? (
-              <X className="w-6 h-6" />
+              <X className="w-5 h-5" />
             ) : (
-              <Menu className="w-6 h-6" />
+              <Menu className="w-5 h-5" />
             )}
           </button>
         </div>
       </div>
 
-      {/* ✅ Fixed Mobile Menu Items */}
+      {/* ✅ Mobile Menu Items */}
       {isMenuOpen && (
         <div
-          className={`md:hidden px-8 py-6 space-y-4 ${themeClasses.navBg} border-t ${themeClasses.border} backdrop-blur-xl`}
+          className={`md:hidden px-4 sm:px-6 py-6 space-y-4 ${themeClasses.navBg} border-t ${themeClasses.border} backdrop-blur-xl`}
         >
+          {/* ✅ Navigation links */}
           {navLinks.map((link) => (
             <Link
               key={link.href}
@@ -253,25 +280,46 @@ export default function Header() {
             </Link>
           ))}
           
-          {/* ✅ Mobile auth section */}
+          {/* ✅ Mobile user section */}
           {user ? (
-            <div className="pt-4 border-t border-gray-600">
+            <div className={`pt-4 border-t ${themeClasses.border} space-y-3`}>
+              {/* ✅ User info display */}
+              <div className={`flex items-center space-x-3 ${themeClasses.textSecondary}`}>
+                {profile?.avatar_url && (
+                  <img
+                    src={profile.avatar_url}
+                    alt="Avatar"
+                    className="w-8 h-8 rounded-full"
+                  />
+                )}
+                <div>
+                  <div className="text-sm font-medium">{getDisplayName()}</div>
+                  {profile?.name && user?.email && (
+                    <div className="text-xs opacity-75">{user.email}</div>
+                  )}
+                </div>
+              </div>
+              
               <Link
                 href="/profile"
-                className={`block text-sm font-light transition-colors duration-200 ${themeClasses.textSecondary} hover:text-green-500 mb-2`}
+                className={`flex items-center space-x-2 text-sm font-light transition-colors duration-200 ${themeClasses.textSecondary} hover:text-green-500`}
                 onClick={() => setIsMenuOpen(false)}
               >
-                Profile
+                <User className="w-4 h-4" />
+                <span>Profile</span>
               </Link>
+              
               <button
                 onClick={handleLogout}
-                className={`block text-sm font-light transition-colors duration-200 ${themeClasses.dangerText} ${themeClasses.dangerTextHover}`}
+                className={`flex items-center space-x-2 text-sm font-light transition-colors duration-200 ${themeClasses.dangerText} ${themeClasses.dangerTextHover}`}
               >
-                Logout
+                <LogOut className="w-4 h-4" />
+                <span>Logout</span>
               </button>
             </div>
           ) : (
-            <div className="pt-4 border-t border-gray-600 space-y-2">
+            // ✅ Mobile auth section
+            <div className={`pt-4 border-t ${themeClasses.border} space-y-3`}>
               <Link
                 href="/login"
                 className={`block text-sm font-light transition-colors duration-200 ${themeClasses.textSecondary} hover:text-green-500`}
